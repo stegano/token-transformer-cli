@@ -1,0 +1,22 @@
+/** WARNING! Do not edit this code. this is auto-generated. **/
+
+{{#if tokenData.colors}}/* Colors */{{/if}}
+{{#each tokenData.colors}}
+${{@key}}: {{this.value}};
+{{/each}}
+
+{{#if tokenData.spacing}}/* Spacing */{{/if}}
+{{#each tokenData.spacing}}
+${{@key}}: {{this.value}}px;
+{{/each}}
+
+{{#if tokenData.text_styles}}/* Fonts */{{/if}}
+{{#each tokenData.text_styles}}
+@mixin {{@key}} {
+    font-family: "{{this.value.font.family}}";
+    font-size: {{this.value.font.size}}px;
+    {{#if this.value.font.weight}}font-weight: {{this.value.font.weight}};{{/if}}
+    {{#if this.value.line_height}}line-height: {{this.value.line_height}}px;{{/if}}
+    {{#if this.value.font.color}}color: {{this.color}};{{/if}}
+}
+{{/each}}
