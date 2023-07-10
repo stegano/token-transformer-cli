@@ -128,6 +128,11 @@ export const fetchConfig = async (options: Options): Promise<Config> => {
    * Verbose mode
    */
   config.verbose = options.verbose === true;
+
+  /**
+   * Debug mode
+   */
+  config.debug = options.debug === true;
   return config;
 };
 
@@ -174,7 +179,9 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
 
     const { presets = [], outputFile } = config;
 
-    const templateFileList = getTemplateFileList(config, presets);
+    const templateFileList = options.templateFile
+      ? [options.templateFile]
+      : getTemplateFileList(config, presets);
     const template =
       templateFileList.length === 0 ? undefined : await fs.readFile(templateFileList[0], "utf-8");
 
@@ -185,9 +192,10 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
       throw new Error("Multiple templates have been set.");
     }
 
-    const outputFileExtensionList = getOutputFileExtensionList(config, presets);
-    const outputFileExtension =
-      outputFileExtensionList[0] || (outputFile?.name && path.extname(outputFile.name).slice(1));
+    const outputFileExtensionList = options.outputFile
+      ? [path.parse(options.outputFile).ext.slice(1)]
+      : getOutputFileExtensionList(config, presets);
+    const outputFileExtension = outputFileExtensionList[0];
 
     /**
      * Error occurs when multiple file extensions exist
