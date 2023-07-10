@@ -34,7 +34,7 @@ const fs_extra_1 = __importDefault(require("fs-extra"));
 const chalk_1 = __importDefault(require("chalk"));
 const transform_1 = require("../../../transform");
 const cli_interface_1 = require("../../cli.interface");
-const { log } = console;
+const { error, log } = console;
 /**
  * Import module
  */
@@ -139,6 +139,10 @@ const fetchConfig = async (options) => {
      * Verbose mode
      */
     config.verbose = options.verbose === true;
+    /**
+     * Debug mode
+     */
+    config.debug = options.debug === true;
     return config;
 };
 exports.fetchConfig = fetchConfig;
@@ -182,17 +186,27 @@ const runAction = async (inputToken, options) => {
         const currDir = process.cwd();
         const config = await (0, exports.fetchConfig)({ ...options, token: inputToken });
         const configFileDir = await (0, exports.fetchConfigPath)();
+        if (configFileDir) {
+            log(chalk_1.default.green.bold(`[!] Configuration file found at ${configFileDir}\n\n`));
+        }
+        else {
+            log(chalk_1.default.yellow.bold("[!] Configuration file not found.\n\n"));
+        }
         const { presets = [], outputFile } = config;
-        const templateFileList = (0, exports.getTemplateFileList)(config, presets);
+        const templateFileList = options.templateFile
+            ? [options.templateFile]
+            : (0, exports.getTemplateFileList)(config, presets);
         const template = templateFileList.length === 0 ? undefined : await fs_extra_1.default.readFile(templateFileList[0], "utf-8");
         /**
          * Error occurs when multiple templates exist
          */
         if (templateFileList.length > 1) {
-            throw new Error("Multiple file extensions have been set.");
+            throw new Error("Multiple templates have been set.");
         }
-        const outputFileExtensionList = (0, exports.getOutputFileExtensionList)(config, presets);
-        const outputFileExtension = outputFileExtensionList[0] || (outputFile?.name && node_path_1.default.extname(outputFile.name).slice(1));
+        const outputFileExtensionList = options.outputFile
+            ? [node_path_1.default.parse(options.outputFile).ext.slice(1)]
+            : (0, exports.getOutputFileExtensionList)(config, presets);
+        const outputFileExtension = outputFileExtensionList[0];
         /**
          * Error occurs when multiple file extensions exist
          */
@@ -253,7 +267,12 @@ const runAction = async (inputToken, options) => {
         }
     }
     catch (e) {
-        log(chalk_1.default.red(`[Error] ${e.message}`));
+        if (options.debug) {
+            error(e);
+        }
+        else {
+            log(chalk_1.default.red(`[Error] ${e.message}`));
+        }
     }
 };
 exports.runAction = runAction;

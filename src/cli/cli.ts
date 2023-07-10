@@ -49,6 +49,6 @@ program
   .action(runAction)
   .parse(process.argv);
 
-program.version("0.0.13");
+program.version("0.0.14");
 
 export default program;

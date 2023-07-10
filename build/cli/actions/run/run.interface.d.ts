@@ -39,4 +39,8 @@ export interface Options {
      * If `outputFile` value is not set, output to `stdout`
      */
     verbose: boolean;
+    /**
+     * Debug mode
+     */
+    debug: boolean;
 }

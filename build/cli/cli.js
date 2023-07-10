@@ -23,11 +23,12 @@ exports.program
     .option("-o, --output-file <file>", "Output file path", env.TT_OUTPUT_FILE)
     .option("-i, --token <string>", "Input token (ignores file at token path)", env.TT_TOKEN)
     .option("-t, --token-file <file>", "Token file path", env.TT_TOKEN_FILE)
-    .option("-b, --pre-processors <module...>", "Pre-processor names", env.TT_PRE_PROCESSORS || [])
-    .option("-a, --post-processors <module...>", "Post-processor names", env.TT_POST_PROCESSORS || [])
-    .option("-p, --presets <module...>", "Preset names", env.TT_PRESETS || [])
+    .option("-b, --pre-processors <module...>", "Pre-processor names", env.TT_PRE_PROCESSORS ? env.TT_PRE_PROCESSORS.split(",") : [])
+    .option("-a, --post-processors <module...>", "Post-processor names", env.TT_POST_PROCESSORS ? env.TT_POST_PROCESSORS.split(",") : [])
+    .option("-p, --presets <module...>", "Preset names", env.TT_PRESETS ? env.TT_PRESETS.split(",") : [])
     .option("-v, --verbose", "Print to stdout if output file doesn't exist", env.TT_VERBOSE === "true")
+    .option("--debug", "Print debug information", env.TT_DEBUG === "true")
     .action(run_1.runAction)
     .parse(process.argv);
-exports.program.version("0.0.13");
+exports.program.version("0.0.14");
 exports.default = exports.program;
