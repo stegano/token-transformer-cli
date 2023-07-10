@@ -182,7 +182,7 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
      * Error occurs when multiple templates exist
      */
     if (templateFileList.length > 1) {
-      throw new Error("Multiple file extensions have been set.");
+      throw new Error("Multiple templates have been set.");
     }
 
     const outputFileExtensionList = getOutputFileExtensionList(config, presets);
