@@ -8,7 +8,7 @@ import { Config } from "../../../config/config.interface";
 import { PostProcessor, PreProcessor, Preset, transform } from "../../../transform";
 import { CONFIG_FILE_NAME } from "../../cli.interface";
 
-const { log } = console;
+const { error, log } = console;
 
 /**
  * Import module
@@ -265,7 +265,11 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
       }
     }
   } catch (e) {
-    log(chalk.red(`[Error] ${(e as Error).message}`));
+    if (options.debug) {
+      error(e);
+    } else {
+      log(chalk.red(`[Error] ${(e as Error).message}`));
+    }
   }
 };
 

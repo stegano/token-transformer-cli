@@ -45,6 +45,7 @@ program
     "Print to stdout if output file doesn't exist",
     env.TT_VERBOSE === "true",
   )
+  .option("--debug", "Print debug information", env.TT_DEBUG === "true")
   .action(runAction)
   .parse(process.argv);
 
