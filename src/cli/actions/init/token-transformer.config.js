@@ -8,10 +8,12 @@ const config = {
      * Output file name
      */
     name: "design-style",
+
     /**
      * Output file path
      */
     dir: "out",
+
     /**
      * Output file extension
      */
