@@ -177,6 +177,12 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
     const config = await fetchConfig({ ...options, token: inputToken });
     const configFileDir = await fetchConfigPath();
 
+    if (configFileDir) {
+      log(chalk.green.bold(`[!] Configuration file found at ${configFileDir}\n\n`));
+    } else {
+      log(chalk.yellow.bold("[!] Configuration file not found.\n\n"));
+    }
+
     const { presets = [], outputFile } = config;
 
     const templateFileList = options.templateFile
