@@ -13,15 +13,7 @@ const { error, log } = console;
 /**
  * Import module
  */
-export const importModule = async (name: string, builtInPrefix?: string) => {
-  /**
-   * Module loading proiority
-   * `bulit-in` → `node_modules`
-   */
-  const builtInModulePath = path.resolve(__dirname, "../../../built-in", builtInPrefix || "", name);
-  if (await fs.exists(builtInModulePath)) {
-    return (await import(builtInModulePath)).default;
-  }
+export const importModule = async (name: string) => {
   return import(name);
 };
 
@@ -89,7 +81,7 @@ export const fetchConfig = async (options: Options): Promise<Config> => {
     config.preProcessors = await Promise.all(
       [...(config.preProcessors || []), ...options.preProcessors].map((module) => {
         if (typeof module === "string") {
-          return importModule(module, "pre-processors");
+          return importModule(module);
         }
         return module;
       }),
@@ -103,7 +95,7 @@ export const fetchConfig = async (options: Options): Promise<Config> => {
     config.postProcessors = await Promise.all(
       [...(config.postProcessors || []), ...options.postProcessors].map((module) => {
         if (typeof module === "string") {
-          return importModule(module, "post-processors");
+          return importModule(module);
         }
         return module;
       }),
@@ -117,7 +109,7 @@ export const fetchConfig = async (options: Options): Promise<Config> => {
     config.presets = await Promise.all(
       [...(config.presets || []), ...options.presets].map((module) => {
         if (typeof module === "string") {
-          return importModule(module, "presets");
+          return importModule(module);
         }
         return module;
       }),

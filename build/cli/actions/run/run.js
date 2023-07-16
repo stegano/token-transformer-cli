@@ -38,15 +38,7 @@ const { error, log } = console;
 /**
  * Import module
  */
-const importModule = async (name, builtInPrefix) => {
-    /**
-     * Module loading proiority
-     * `bulit-in` → `node_modules`
-     */
-    const builtInModulePath = node_path_1.default.resolve(__dirname, "../../../built-in", builtInPrefix || "", name);
-    if (await fs_extra_1.default.exists(builtInModulePath)) {
-        return (await Promise.resolve(`${builtInModulePath}`).then(s => __importStar(require(s)))).default;
-    }
+const importModule = async (name) => {
     return Promise.resolve(`${name}`).then(s => __importStar(require(s)));
 };
 exports.importModule = importModule;
@@ -108,7 +100,7 @@ const fetchConfig = async (options) => {
     if (options.preProcessors) {
         config.preProcessors = await Promise.all([...(config.preProcessors || []), ...options.preProcessors].map((module) => {
             if (typeof module === "string") {
-                return (0, exports.importModule)(module, "pre-processors");
+                return (0, exports.importModule)(module);
             }
             return module;
         }));
@@ -119,7 +111,7 @@ const fetchConfig = async (options) => {
     if (options.postProcessors) {
         config.postProcessors = await Promise.all([...(config.postProcessors || []), ...options.postProcessors].map((module) => {
             if (typeof module === "string") {
-                return (0, exports.importModule)(module, "post-processors");
+                return (0, exports.importModule)(module);
             }
             return module;
         }));
@@ -130,7 +122,7 @@ const fetchConfig = async (options) => {
     if (options.presets) {
         config.presets = await Promise.all([...(config.presets || []), ...options.presets].map((module) => {
             if (typeof module === "string") {
-                return (0, exports.importModule)(module, "presets");
+                return (0, exports.importModule)(module);
             }
             return module;
         }));

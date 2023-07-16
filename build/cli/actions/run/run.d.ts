@@ -4,7 +4,7 @@ import { Preset } from "../../../transform";
 /**
  * Import module
  */
-export declare const importModule: (name: string, builtInPrefix?: string) => Promise<any>;
+export declare const importModule: (name: string) => Promise<any>;
 /**
  * Fetch configuration file path
  */
