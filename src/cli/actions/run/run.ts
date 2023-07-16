@@ -191,15 +191,17 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
     const configFileDir = await fetchConfigPath();
 
     if (configFileDir) {
-      log(chalk.green.bold(`[!] Configuration file found at ${configFileDir}\n\n`));
+      log(
+        chalk.green.bold(
+          `[!] Configuration file found at ${path.resolve(configFileDir, CONFIG_FILE_NAME)}\n\n`,
+        ),
+      );
     } else {
       log(chalk.yellow.bold("[!] Configuration file not found.\n\n"));
     }
 
     const currDir = process.cwd();
     const config = await fetchConfig({ ...options, token: inputToken });
-
-    console.log(`config ≥≥≥ `, config);
 
     const { presets = [], outputFile } = config;
 
@@ -221,8 +223,6 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
     if (template === undefined && templateFileList.length > 0) {
       template = await fs.readFile(templateFileList[0], "utf-8");
     }
-
-    console.log(`@@@ TEMPLATE ≥`, template);
 
     const outputFileExtensionList = options.outputFile
       ? [path.parse(options.outputFile).ext.slice(1)]

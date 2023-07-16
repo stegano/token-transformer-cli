@@ -39,7 +39,7 @@ const { error, log } = console;
  * Import module
  */
 const importModule = async (name) => {
-    return Promise.resolve(`${name}`).then(s => __importStar(require(s)));
+    return (await Promise.resolve(`${name}`).then(s => __importStar(require(s)))).default;
 };
 exports.importModule = importModule;
 /**
@@ -199,7 +199,7 @@ const runAction = async (inputToken, options) => {
     try {
         const configFileDir = await (0, exports.fetchConfigPath)();
         if (configFileDir) {
-            log(chalk_1.default.green.bold(`[!] Configuration file found at ${configFileDir}\n\n`));
+            log(chalk_1.default.green.bold(`[!] Configuration file found at ${node_path_1.default.resolve(configFileDir, cli_interface_1.CONFIG_FILE_NAME)}\n\n`));
         }
         else {
             log(chalk_1.default.yellow.bold("[!] Configuration file not found.\n\n"));
