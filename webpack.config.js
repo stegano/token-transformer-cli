@@ -1,4 +1,6 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
   mode: "production",
@@ -35,4 +37,11 @@ module.exports = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
+  plugins: [
+    new webpack.BannerPlugin({
+      banner: "#!/usr/bin/env node",
+      raw: true,
+      include: /cli\.js/,
+    }),
+  ],
 };
