@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runAction = exports.getOutputFileExtensionList = exports.getTemplateFileList = exports.getTemplateList = exports.fetchConfig = exports.fetchConfigFilePath = exports.importModule = void 0;
+exports.runAction = exports.getOutputFileExtensionList = exports.getTemplateFileList = exports.getTemplateList = exports.fetchConfig = exports.fetchConfigPath = exports.importModule = void 0;
 /* eslint-disable global-require */
 const node_path_1 = __importDefault(require("node:path"));
 const node_os_1 = __importDefault(require("node:os"));
@@ -39,24 +39,24 @@ const { error, log } = console;
  * Import module
  */
 const importModule = async (name) => {
-    return (await Promise.resolve(`${name}`).then(s => __importStar(require(s)))).default;
+    return Promise.resolve(`${name}`).then(s => __importStar(require(s)));
 };
 exports.importModule = importModule;
 /**
  * Fetch configuration file path
  */
-const fetchConfigFilePath = async () => {
-    const homeDirConfigFile = node_path_1.default.resolve(node_os_1.default.homedir(), cli_interface_1.CONFIG_FILE_NAME);
-    const currDirConfigFile = node_path_1.default.resolve(process.cwd(), cli_interface_1.CONFIG_FILE_NAME);
-    if (await fs_extra_1.default.exists(currDirConfigFile)) {
-        return currDirConfigFile;
+const fetchConfigPath = async () => {
+    const homeDir = node_os_1.default.homedir();
+    const currDir = process.cwd();
+    if (await fs_extra_1.default.exists(node_path_1.default.resolve(currDir, cli_interface_1.CONFIG_FILE_NAME))) {
+        return currDir;
     }
-    if (await fs_extra_1.default.exists(homeDirConfigFile)) {
-        return homeDirConfigFile;
+    if (await fs_extra_1.default.exists(node_path_1.default.resolve(homeDir, cli_interface_1.CONFIG_FILE_NAME))) {
+        return homeDir;
     }
     return undefined;
 };
-exports.fetchConfigFilePath = fetchConfigFilePath;
+exports.fetchConfigPath = fetchConfigPath;
 /**
  * Fetch configuration
  */
@@ -197,7 +197,7 @@ exports.getOutputFileExtensionList = getOutputFileExtensionList;
  */
 const runAction = async (inputToken, options) => {
     try {
-        const configFileDir = await (0, exports.fetchConfigFilePath)();
+        const configFileDir = await (0, exports.fetchConfigPath)();
         if (configFileDir) {
             log(chalk_1.default.green.bold(`[!] Configuration file found at ${configFileDir}\n\n`));
         }

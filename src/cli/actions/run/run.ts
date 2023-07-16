@@ -20,15 +20,14 @@ export const importModule = async (name: string) => {
 /**
  * Fetch configuration file path
  */
-export const fetchConfigFilePath = async (): Promise<string | void> => {
-  const homeDirConfigFile = path.resolve(os.homedir(), CONFIG_FILE_NAME);
-  const currDirConfigFile = path.resolve(process.cwd(), CONFIG_FILE_NAME);
-  if (await fs.exists(currDirConfigFile)) {
-    return currDirConfigFile;
+export const fetchConfigPath = async (): Promise<string | void> => {
+  const homeDir = os.homedir();
+  const currDir = process.cwd();
+  if (await fs.exists(path.resolve(currDir, CONFIG_FILE_NAME))) {
+    return currDir;
   }
-
-  if (await fs.exists(homeDirConfigFile)) {
-    return homeDirConfigFile;
+  if (await fs.exists(path.resolve(homeDir, CONFIG_FILE_NAME))) {
+    return homeDir;
   }
   return undefined;
 };
@@ -189,7 +188,7 @@ export const getOutputFileExtensionList = (config: Config, presets: Preset[]): s
  */
 export const runAction = async (inputToken: string, options: Options): Promise<void> => {
   try {
-    const configFileDir = await fetchConfigFilePath();
+    const configFileDir = await fetchConfigPath();
 
     if (configFileDir) {
       log(chalk.green.bold(`[!] Configuration file found at ${configFileDir}\n\n`));
@@ -199,6 +198,8 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
 
     const currDir = process.cwd();
     const config = await fetchConfig({ ...options, token: inputToken });
+
+    console.log(`config ≥≥≥ `, config);
 
     const { presets = [], outputFile } = config;
 
@@ -220,6 +221,8 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
     if (template === undefined && templateFileList.length > 0) {
       template = await fs.readFile(templateFileList[0], "utf-8");
     }
+
+    console.log(`@@@ TEMPLATE ≥`, template);
 
     const outputFileExtensionList = options.outputFile
       ? [path.parse(options.outputFile).ext.slice(1)]

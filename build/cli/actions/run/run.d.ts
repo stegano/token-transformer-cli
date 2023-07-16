@@ -8,7 +8,7 @@ export declare const importModule: (name: string) => Promise<any>;
 /**
  * Fetch configuration file path
  */
-export declare const fetchConfigFilePath: () => Promise<string | void>;
+export declare const fetchConfigPath: () => Promise<string | void>;
 /**
  * Fetch configuration
  */
