@@ -1,6 +1,6 @@
 {
   "name": "@stegano/token-transformer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Token Transformer: A versatile library that enables the transformation of token information into desired forms (e.g., converting design tokens into CSS, SCSS, and more).",
   "main": "build/bin/transform.js",
   "bin": {
