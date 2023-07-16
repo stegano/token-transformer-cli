@@ -1,4 +1,4 @@
-import Handlebars from "handlebars";
+import Handlebars from "handlebars/runtime";
 import { PostProcessor, PreProcessor } from "./transform.interface";
 
 /**
