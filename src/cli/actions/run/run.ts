@@ -14,7 +14,7 @@ const { error, log } = console;
  * Import module
  */
 export const importModule = async (name: string) => {
-  return import(name);
+  return (await import(name)).default;
 };
 
 /**
@@ -199,6 +199,8 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
     const currDir = process.cwd();
     const config = await fetchConfig({ ...options, token: inputToken });
 
+    console.log(`config ≥≥≥ `, config);
+
     const { presets = [], outputFile } = config;
 
     const templateList = options.template ? [options.template] : getTemplateList(config, presets);
@@ -219,6 +221,8 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
     if (template === undefined && templateFileList.length > 0) {
       template = await fs.readFile(templateFileList[0], "utf-8");
     }
+
+    console.log(`@@@ TEMPLATE ≥`, template);
 
     const outputFileExtensionList = options.outputFile
       ? [path.parse(options.outputFile).ext.slice(1)]
