@@ -15,6 +15,10 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /token-transformer.config.js$/,
+        use: "raw-loader",
+      },
+      {
         test: /\.tsx?$/,
         use: [
           {

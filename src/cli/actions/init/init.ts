@@ -1,8 +1,10 @@
+/* eslint-disable import/extensions */
 import path from "node:path";
 import fs from "fs-extra";
 import chalk from "chalk";
 import { Options } from "./init.interface";
 import { CONFIG_FILE_NAME } from "../../cli.interface";
+import defaultConfig from "./token-transformer.config.js";
 
 const { log } = console;
 
@@ -25,10 +27,9 @@ export const initAction = async (options: Options): Promise<void> => {
     return;
   }
   if (isExistFile === false || options.force === true) {
-    fs.copy(
-      path.resolve(__dirname, filename),
-      path.resolve(process.cwd(), options.fileDir, filename),
-    );
+    await fs.writeFile(path.resolve(process.cwd(), options.fileDir, filename), defaultConfig, {
+      encoding: "utf-8",
+    });
   }
 };
 
