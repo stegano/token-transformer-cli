@@ -19,6 +19,10 @@ export interface Options {
      */
     tokenFile?: string;
     /**
+     * Template
+     */
+    template?: string;
+    /**
      * Templat file path
      */
     templateFile?: string;

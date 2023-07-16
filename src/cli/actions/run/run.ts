@@ -70,6 +70,13 @@ export const fetchConfig = async (options: Options): Promise<Config> => {
   /**
    * Template
    */
+  if (options.template) {
+    config.template = options.template;
+  }
+
+  /**
+   * Template file
+   */
   if (options.templateFile) {
     config.templateFile = options.templateFile;
   }
@@ -129,6 +136,22 @@ export const fetchConfig = async (options: Options): Promise<Config> => {
 };
 
 /**
+ * Fetch list of template
+ */
+export const getTemplateList = (config: Config, presets: Preset[]): string[] => {
+  const ret: string[] = [];
+  if (config.template) {
+    ret.push(config.template);
+  }
+  presets.forEach(({ template }) => {
+    if (template) {
+      ret.push(template);
+    }
+  });
+  return ret;
+};
+
+/**
  * Fetch list of template file paths
  */
 export const getTemplateFileList = (config: Config, presets: Preset[]): string[] => {
@@ -165,8 +188,6 @@ export const getOutputFileExtensionList = (config: Config, presets: Preset[]): s
  */
 export const runAction = async (inputToken: string, options: Options): Promise<void> => {
   try {
-    const currDir = process.cwd();
-    const config = await fetchConfig({ ...options, token: inputToken });
     const configFileDir = await fetchConfigPath();
 
     if (configFileDir) {
@@ -175,19 +196,28 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
       log(chalk.yellow.bold("[!] Configuration file not found.\n\n"));
     }
 
+    const currDir = process.cwd();
+    const config = await fetchConfig({ ...options, token: inputToken });
+
     const { presets = [], outputFile } = config;
+
+    const templateList = options.template ? [options.template] : getTemplateList(config, presets);
 
     const templateFileList = options.templateFile
       ? [options.templateFile]
       : getTemplateFileList(config, presets);
-    const template =
-      templateFileList.length === 0 ? undefined : await fs.readFile(templateFileList[0], "utf-8");
 
     /**
      * Error occurs when multiple templates exist
      */
-    if (templateFileList.length > 1) {
+    if (templateList.length + templateFileList.length > 1) {
       throw new Error("Multiple templates have been set.");
+    }
+
+    let template = templateList[0];
+
+    if (template === undefined && templateFileList.length > 0) {
+      template = await fs.readFile(templateFileList[0], "utf-8");
     }
 
     const outputFileExtensionList = options.outputFile

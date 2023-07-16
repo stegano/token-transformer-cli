@@ -14,6 +14,10 @@ export declare const fetchConfigPath: () => Promise<string | void>;
  */
 export declare const fetchConfig: (options: Options) => Promise<Config>;
 /**
+ * Fetch list of template
+ */
+export declare const getTemplateList: (config: Config, presets: Preset[]) => string[];
+/**
  * Fetch list of template file paths
  */
 export declare const getTemplateFileList: (config: Config, presets: Preset[]) => string[];

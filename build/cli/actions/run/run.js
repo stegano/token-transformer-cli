@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runAction = exports.getOutputFileExtensionList = exports.getTemplateFileList = exports.fetchConfig = exports.fetchConfigPath = exports.importModule = void 0;
+exports.runAction = exports.getOutputFileExtensionList = exports.getTemplateFileList = exports.getTemplateList = exports.fetchConfig = exports.fetchConfigPath = exports.importModule = void 0;
 /* eslint-disable global-require */
 const node_path_1 = __importDefault(require("node:path"));
 const node_os_1 = __importDefault(require("node:os"));
@@ -91,6 +91,12 @@ const fetchConfig = async (options) => {
     /**
      * Template
      */
+    if (options.template) {
+        config.template = options.template;
+    }
+    /**
+     * Template file
+     */
     if (options.templateFile) {
         config.templateFile = options.templateFile;
     }
@@ -139,6 +145,22 @@ const fetchConfig = async (options) => {
 };
 exports.fetchConfig = fetchConfig;
 /**
+ * Fetch list of template
+ */
+const getTemplateList = (config, presets) => {
+    const ret = [];
+    if (config.template) {
+        ret.push(config.template);
+    }
+    presets.forEach(({ template }) => {
+        if (template) {
+            ret.push(template);
+        }
+    });
+    return ret;
+};
+exports.getTemplateList = getTemplateList;
+/**
  * Fetch list of template file paths
  */
 const getTemplateFileList = (config, presets) => {
@@ -175,8 +197,6 @@ exports.getOutputFileExtensionList = getOutputFileExtensionList;
  */
 const runAction = async (inputToken, options) => {
     try {
-        const currDir = process.cwd();
-        const config = await (0, exports.fetchConfig)({ ...options, token: inputToken });
         const configFileDir = await (0, exports.fetchConfigPath)();
         if (configFileDir) {
             log(chalk_1.default.green.bold(`[!] Configuration file found at ${configFileDir}\n\n`));
@@ -184,16 +204,22 @@ const runAction = async (inputToken, options) => {
         else {
             log(chalk_1.default.yellow.bold("[!] Configuration file not found.\n\n"));
         }
+        const currDir = process.cwd();
+        const config = await (0, exports.fetchConfig)({ ...options, token: inputToken });
         const { presets = [], outputFile } = config;
+        const templateList = options.template ? [options.template] : (0, exports.getTemplateList)(config, presets);
         const templateFileList = options.templateFile
             ? [options.templateFile]
             : (0, exports.getTemplateFileList)(config, presets);
-        const template = templateFileList.length === 0 ? undefined : await fs_extra_1.default.readFile(templateFileList[0], "utf-8");
         /**
          * Error occurs when multiple templates exist
          */
-        if (templateFileList.length > 1) {
+        if (templateList.length + templateFileList.length > 1) {
             throw new Error("Multiple templates have been set.");
+        }
+        let template = templateList[0];
+        if (template === undefined && templateFileList.length > 0) {
+            template = await fs_extra_1.default.readFile(templateFileList[0], "utf-8");
         }
         const outputFileExtensionList = options.outputFile
             ? [node_path_1.default.parse(options.outputFile).ext.slice(1)]

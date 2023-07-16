@@ -30,6 +30,10 @@ export interface Config {
    */
   tokenFile?: string;
   /**
+   * Template
+   */
+  template?: string;
+  /**
    * Template file path
    */
   templateFile?: string;

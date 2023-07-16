@@ -13,6 +13,7 @@ export interface Preset {
     preProcessors?: PreProcessor[];
     postProcessors?: PostProcessor[];
     templateFile?: string;
+    template?: string;
     outputFile?: {
         ext: string;
     };
