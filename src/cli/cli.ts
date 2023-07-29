@@ -10,6 +10,7 @@ const { env } = process;
 
 program
   .command("init")
+  .description("Create a configuration file")
   .option("-d, --fileDir <directory>", "Directory to generate config file.", ".")
   .option("-c, --cli", "Create a dedicated configuration file for the CLI.", false)
   .option("-f, --force", "Force creation if file exists", false)
@@ -17,6 +18,7 @@ program
 
 program
   .command("run")
+  .description("Run the token-transformer")
   .argument("[token]")
   .option(
     "-c, --config-file <filepath>",
@@ -49,10 +51,11 @@ program
   .option("--debug", "Print debug information.", env.TT_DEBUG === "true")
   .action(Run.action);
 
-const configProgram = new Command("config");
+const configProgram = new Command("config").description("Configuration commands");
 
 configProgram
   .command("show")
+  .description("Show the configuration.")
   .option("-n, --name <name...>", "Display the values for the input option names.", [])
   .option("-l, --line-numbers", "Display with line numbers.", false)
   .option(
@@ -64,6 +67,7 @@ configProgram
 
 configProgram
   .command("set")
+  .description("Set the configuration.")
   .option("-n, --name <name>", "Option name to be set.")
   .option("-v, --value <value...>", "Option value to be set.")
   .option(
@@ -75,6 +79,7 @@ configProgram
 
 configProgram
   .command("unset")
+  .description("Unset the configuration.")
   .option("-n, --name <name>", "Option name to be unset.")
   .option(
     "-c, --config-file <filepath>",
