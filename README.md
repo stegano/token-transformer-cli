@@ -39,7 +39,7 @@ Get started quickly with [token-transformer-presets](https://www.npmjs.com/packa
 
 ## Commands
 
-You can run Token Transformer via `tt` or `token-transformer` command. To see the commands and options, run the following command line.
+You can run Token Transformer via `tt` or `tt-cli` command. To see the commands and options, run the following command line.
 
 ```bash
 tt --help
