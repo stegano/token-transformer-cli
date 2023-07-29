@@ -1,44 +1,26 @@
-/* eslint-disable global-require */
 import path from "node:path";
-import os from "node:os";
 import fs from "fs-extra";
 import chalk from "chalk";
 import { Options } from "./run.interface";
 import { Config } from "../../../config/config.interface";
 import { PostProcessor, PreProcessor, Preset, transform } from "../../../transform";
-import { CONFIG_FILE_NAME } from "../../cli.interface";
+import {
+  CONFIG_JSON_FILE_NAME,
+  CONFIG_JS_FILE_NAME,
+  fetchConfigFilePath,
+  importModule,
+} from "../../utils";
 
 const { error, log } = console;
 
 /**
- * Import module
- */
-export const importModule = async (name: string) => {
-  return (await import(name)).default;
-};
-
-/**
- * Fetch configuration file path
- */
-export const fetchConfigPath = async (): Promise<string | void> => {
-  const homeDir = os.homedir();
-  const currDir = process.cwd();
-  if (await fs.exists(path.resolve(currDir, CONFIG_FILE_NAME))) {
-    return currDir;
-  }
-  if (await fs.exists(path.resolve(homeDir, CONFIG_FILE_NAME))) {
-    return homeDir;
-  }
-  return undefined;
-};
-
-/**
  * Fetch configuration
  */
-export const fetchConfig = async (options: Options): Promise<Config> => {
+const fetchConfig = async (options: Options): Promise<Config> => {
   let config = {} as Config;
-  if (await fs.exists(options.config)) {
-    config = (await import(options.config)).default;
+
+  if (await fs.exists(options.configFile)) {
+    config = (await import(options.configFile)).default;
   }
 
   /**
@@ -138,7 +120,7 @@ export const fetchConfig = async (options: Options): Promise<Config> => {
 /**
  * Fetch list of template
  */
-export const getTemplateList = (config: Config, presets: Preset[]): string[] => {
+const getTemplateList = (config: Config, presets: Preset[]): string[] => {
   const ret: string[] = [];
   if (config.template) {
     ret.push(config.template);
@@ -154,7 +136,7 @@ export const getTemplateList = (config: Config, presets: Preset[]): string[] => 
 /**
  * Fetch list of template file paths
  */
-export const getTemplateFileList = (config: Config, presets: Preset[]): string[] => {
+const getTemplateFileList = (config: Config, presets: Preset[]): string[] => {
   const ret: string[] = [];
   if (config.templateFile) {
     ret.push(config.templateFile);
@@ -170,7 +152,7 @@ export const getTemplateFileList = (config: Config, presets: Preset[]): string[]
 /**
  * Fetch list of file extensions
  */
-export const getOutputFileExtensionList = (config: Config, presets: Preset[]): string[] => {
+const getOutputFileExtensionList = (config: Config, presets: Preset[]): string[] => {
   const ret: string[] = [];
   if (config.outputFile?.ext) {
     ret.push(config.outputFile.ext);
@@ -186,22 +168,27 @@ export const getOutputFileExtensionList = (config: Config, presets: Preset[]): s
 /**
  * Run action
  */
-export const runAction = async (inputToken: string, options: Options): Promise<void> => {
+export const action = async (inputToken: string, options: Options): Promise<void> => {
   try {
-    const configFileDir = await fetchConfigPath();
+    const configFilePath =
+      (await fetchConfigFilePath(CONFIG_JS_FILE_NAME)) ||
+      (await fetchConfigFilePath(CONFIG_JSON_FILE_NAME));
 
-    if (configFileDir) {
-      log(
-        chalk.green.bold(
-          `[!] Configuration file found at ${path.resolve(configFileDir, CONFIG_FILE_NAME)}\n\n`,
-        ),
-      );
+    const configFileDir = configFilePath ? path.dirname(configFilePath) : undefined;
+
+    if (configFilePath) {
+      log(chalk.green(`[✓] Configuration file found at \`${configFilePath}\`\n`));
     } else {
-      log(chalk.yellow.bold("[!] Configuration file not found.\n\n"));
+      log(chalk.yellow("[𝘟] Configuration file not found.\n"));
     }
 
     const currDir = process.cwd();
-    const config = await fetchConfig({ ...options, token: inputToken });
+
+    const config = await fetchConfig({
+      ...options,
+      configFile: configFilePath || "",
+      token: inputToken,
+    });
 
     const { presets = [], outputFile } = config;
 
@@ -212,10 +199,11 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
       : getTemplateFileList(config, presets);
 
     /**
-     * Error occurs when multiple templates exist
+     * Error occurs when multiple templates exist.
      */
     if (templateList.length + templateFileList.length > 1) {
-      throw new Error("Multiple templates have been set.");
+      log(chalk.red("[𝘟] Multiple templates have been set."));
+      return;
     }
 
     let template = templateList[0];
@@ -230,10 +218,11 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
     const outputFileExtension = outputFileExtensionList[0];
 
     /**
-     * Error occurs when multiple file extensions exist
+     * Error occurs when multiple file extensions exist.
      */
     if (outputFileExtensionList.length > 1) {
-      throw new Error("Multiple file extensions have been set.");
+      log(chalk.red("[𝘟] Multiple file extensions have been set."));
+      return;
     }
 
     const token = config.token
@@ -248,7 +237,8 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
      * Error occurs when no token information exists
      */
     if (token === undefined) {
-      throw new Error("Token information is not provided.");
+      log(chalk.red("[𝘟] Token information is not provided."));
+      return;
     }
 
     /**
@@ -278,14 +268,14 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
     /**
      * Generate result file
      */
-    if (outputFile) {
+    if (outputFile?.dir && outputFile?.name) {
       await fs.mkdirp(
         path.resolve(options.outputFile ? currDir : configFileDir || currDir, outputFile.dir),
       );
       const parsedOutputName = path.parse(outputFile.name);
-      const outputFilename =
-        path.basename(parsedOutputName.name) +
-        (outputFileExtension ? `.${outputFileExtension}` : "");
+      const outputFilename = outputFileExtension
+        ? `${path.basename(parsedOutputName.name)}.${outputFileExtension}`
+        : parsedOutputName.name;
       const outputFilePath = path.resolve(outputFile.dir, outputFilename);
       await fs.writeFile(outputFilePath, transformed, "utf-8");
       log(chalk.green(`[Success] Created '${outputFilePath}'.`));
@@ -305,4 +295,4 @@ export const runAction = async (inputToken: string, options: Options): Promise<v
   }
 };
 
-export default runAction;
+export default action;

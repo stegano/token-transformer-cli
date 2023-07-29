@@ -1,3 +1,5 @@
+const pkg = require("./package.json");
+
 /** @type {import("@stegano/token-transformer").Config} */
 const config = {
   /**
@@ -7,59 +9,41 @@ const config = {
     /**
      * Output file name
      */
-    name: "design-style",
-
+    name: "cli",
     /**
      * Output file path
      */
-    dir: "out",
-
+    dir: "./build/cli",
     /**
      * Output file extension
      */
-    // ext: "scss",
+    ext: "js",
   },
 
   /**
    * Preset modules
    * (=`preset` is a set of configurations that includes pre-processors and post-processors.)
    */
-  presets: [
-    "zeplin-scss",
-    // or "zeplin-css",
-    // or "jwt-formatter",
-  ],
-
-  /**
-   * Token file path
-   */
-  tokenFile: "./design-token.json",
+  presets: [],
 
   /**
    * Token string
    * (=Use when you want to input the token directly rather than entering a path in the tokenFile field)
    */
-  // token: "<token>",
+  token: " ",
 
   /**
    * Template file path
    */
-  // templateFile: "<filePath>",
-
-  /**
-   * Pre-processor modules
-   */
-  // preProcessors: ["<module>"],
+  templateFile: "./build/cli/cli.js",
 
   /**
    * Post-processor modules
    */
-  // postProcessors: ["<module>"],
-
-  /**
-   * Standard output to console
-   * If `outputFile` value is not set, output to `stdout`
-   */
-  verbose: false,
+  postProcessors: [
+    (template) => {
+      return template.replace("<version>", pkg.version);
+    },
+  ],
 };
 module.exports = config;
