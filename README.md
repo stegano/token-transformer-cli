@@ -1,40 +1,40 @@
-# Token Transformer
-![NPM License](https://img.shields.io/npm/l/@stegano/token-transformer)
-![NPM Downloads](https://img.shields.io/npm/dw/@stegano/token-transformer)
+# Token Transformer CLI
+![NPM License](https://img.shields.io/npm/l/token-transformer-cli)
+![NPM Downloads](https://img.shields.io/npm/dw/token-transformer-cli)
 
 Token Transformer: A versatile library that enables the transformation of token information into desired forms (e.g., converting design tokens into CSS, SCSS, and more).
 
 ## Installation
 
-The easiest way to install [`@stegano/token-transformer`](https://npm.com/@stegano/token-transformer) is with [npm](https://www.npmjs.com/).
+The easiest way to install [`token-transformer-cli`](https://npm.com/token-transformer-cli) is with [npm](https://www.npmjs.com/).
 
 ```bash
-npm install @stegano/token-transformer token-transformer-presets -g
+npm install token-transformer-cli token-transformer-presets -g
 ```
 
 Alternately, download the source.
 
 ```bash
-git clone https://github.com/stegano/token-transformer.git
+git clone https://github.com/stegano/token-transformer-cli.git
 ```
 
 ## Quick Starts
 
-Get started quickly with [token-transformer-presets](https://www.npmjs.com/package/@stegano/token-transformer)
+Get started quickly with [token-transformer-presets](https://www.npmjs.com/package/token-transformer-cli)
 
 * **Convert Zeplin design token to a CSS file.**
   ```bash
-  tt -p token-transformer-presets/zeplin-css -t <tokenFilePath>
+  tt run -p token-transformer-presets/zeplin-css -t <tokenFilePath>
   ```
 
 * **Convert Zeplin design token to a SCSS file.**
   ```bash
-  tt -p token-transformer-presets/zeplin-scss -t <tokenFilePath>
+  tt run -p token-transformer-presets/zeplin-scss -t <tokenFilePath>
   ```
 
 * **Parsing JWT tokens and displaying them on the screen.**
   ```bash
-  tt <token> -p token-transformer-presets/jwt-viewer # or `tt -p token-transformer-presets/jwt-viewer` -t <tokenFilePath>
+  tt run <token> -p token-transformer-presets/jwt-viewer # or `tt -p token-transformer-presets/jwt-viewer` -t <tokenFilePath>
   ```
 
 ## Commands

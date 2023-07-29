@@ -1,5 +1,5 @@
 {
-  "name": "@stegano/token-transformer",
+  "name": "token-transformer-cli",
   "version": "1.0.0",
   "description": "Token Transformer: A versatile library that enables the transformation of token information into desired forms (e.g., converting design tokens into CSS, SCSS, and more).",
   "main": "build/transform/index.js",
@@ -51,8 +51,8 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "homepage": "https://github.com/stegano/token-transformer#readme",
+  "homepage": "https://github.com/stegano/token-transformer-cli#readme",
   "bugs": {
-    "url": "https://github.com/stegano/token-transformer/issues"
+    "url": "https://github.com/stegano/token-transformer-cli/issues"
   }
 }

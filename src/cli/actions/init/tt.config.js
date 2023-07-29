@@ -1,4 +1,4 @@
-/** @type {import("@stegano/token-transformer").Config} */
+/** @type {import("token-transformer-cli").Config} */
 const config = {
   /**
    * Output file information
