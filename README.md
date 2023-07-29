@@ -1,9 +1,12 @@
 # Token Transformer
+![NPM License](https://img.shields.io/npm/l/@stegano/token-transformer)
+![NPM Downloads](https://img.shields.io/npm/dw/@stegano/token-transformer)
+
 Token Transformer: A versatile library that enables the transformation of token information into desired forms (e.g., converting design tokens into CSS, SCSS, and more).
 
 ## Installation
 
-The easiest way to install [`@stegano/token-transformer`](https://npm.com/@stegano/tokent-ransformer) is with [npm](https://www.npmjs.com/).
+The easiest way to install [`@stegano/token-transformer`](https://npm.com/@stegano/token-transformer) is with [npm](https://www.npmjs.com/).
 
 ```bash
 npm install @stegano/token-transformer token-transformer-presets -g
@@ -17,7 +20,7 @@ git clone https://github.com/stegano/token-transformer.git
 
 ## Quick Starts
 
-Get started quickly with [token-transformer-presets](https://www.npmjs.com/package/token-transformer-presets)
+Get started quickly with [token-transformer-presets](https://www.npmjs.com/package/@stegano/token-transformer)
 
 * **Convert Zeplin design token to a CSS file.**
   ```bash
