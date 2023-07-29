@@ -46,6 +46,7 @@
     "figma",
     "jwt",
     "json",
+    "viewer",
     "design-token"
   ],
   "engines": {

@@ -37,6 +37,23 @@ Get started quickly with [token-transformer-presets](https://www.npmjs.com/packa
   tt run <token> -p token-transformer-presets/jwt-viewer # or `tt -p token-transformer-presets/jwt-viewer` -t <tokenFilePath>
   ```
 
+### Quick Setting Example
+
+This configuration sets Token Transformer CLI to run with `jwt-viewer` preset as the default.
+
+* Create a dedicated CLI configuration file.
+  ```bash
+  cd ~ && tt init --cli 
+  ```
+
+* Save the `jwt-viewer` preset configuration.
+  ```bash
+  tt config set -n presets -v token-transformer-presets/jwt-viewer
+  ```
+* Runt Token Transformer CLI with `jwt-viewer`
+  ```bash
+  tt run "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"
+  ```
 ## Commands
 
 You can run Token Transformer via `tt` or `tt-cli` command. To see the commands and options, run the following command line.
@@ -52,11 +69,12 @@ If you want to use a complex transformation process, it is recommended to config
 
 #### Create a `token-transformer.config.js` file.
 
+Create a default Token Transformer configuration file(`tt.config.js` or `tt.config.json`)
+
 Please refer to the [Config](./src/config/config.interface.ts) interface
 
 ```bash
-# Create a default Token Transformer configuration file(`tt.config.js`)
-tt init
+tt init # or tt init --cli
 ```
 
 ### Customizing
