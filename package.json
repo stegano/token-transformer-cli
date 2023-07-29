@@ -1,7 +1,7 @@
 {
   "name": "token-transformer-cli",
-  "version": "1.0.0",
-  "description": "Token Transformer: A versatile library that enables the transformation of token information into desired forms (e.g., converting design tokens into CSS, SCSS, and more).",
+  "version": "1.0.1",
+  "description": "Token Transformer CLI: A versatile library that enables the transformation of token information into desired forms (e.g., converting design tokens into CSS, SCSS, and more).",
   "main": "build/transform/index.js",
   "bin": {
     "tt": "./build/cli/cli.js",
