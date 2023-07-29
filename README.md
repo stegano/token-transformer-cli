@@ -2,11 +2,11 @@
 ![NPM License](https://img.shields.io/npm/l/token-transformer-cli)
 ![NPM Downloads](https://img.shields.io/npm/dw/token-transformer-cli)
 
-Token Transformer: A versatile library that enables the transformation of token information into desired forms (e.g., converting design tokens into CSS, SCSS, and more).
+Token Transformer CLI: A versatile library that enables the transformation of token information into desired forms (e.g., converting design tokens into CSS, SCSS, and more).
 
 ## Installation
 
-The easiest way to install [`token-transformer-cli`](https://npm.com/token-transformer-cli) is with [npm](https://www.npmjs.com/).
+The easiest way to install [`token-transformer-cli`](https://www.npmjs.com/package/token-transformer-cli) is with [npm](https://www.npmjs.com/).
 
 ```bash
 npm install token-transformer-cli token-transformer-presets -g
@@ -55,8 +55,8 @@ If you want to use a complex transformation process, it is recommended to config
 Please refer to the [Config](./src/config/config.interface.ts) interface
 
 ```bash
-# Create a default Token Transformer configuration file(`tokent-transformer.config.js`)
-tt init 
+# Create a default Token Transformer configuration file(`tt.config.js`)
+tt init
 ```
 
 ### Customizing
