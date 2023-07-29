@@ -1,6 +1,6 @@
 {
   "name": "@stegano/token-transformer",
-  "version": "0.1.7",
+  "version": "1.0.0",
   "description": "Token Transformer: A versatile library that enables the transformation of token information into desired forms (e.g., converting design tokens into CSS, SCSS, and more).",
   "main": "build/transform/index.js",
   "bin": {
@@ -11,7 +11,7 @@
   "scripts": {
     "command": "ts-node ./src/cli/cli.ts",
     "copy:assets": "rsync -av --include='*.js' --include='*/' --exclude='*' src/ build/",
-    "build": "rm -rf ./build && tsc -p tsconfig.build.json && npm run copy:assets",
+    "build": "rm -rf ./build && tsc -p tsconfig.build.json && npm run copy:assets && npm run command run",
     "deploy": "npm run build && npm publish --access=public"
   },
   "author": "Yongwoo Jung<stegano@naver.com>",
@@ -32,10 +32,12 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.196",
     "chalk": "^4.1.2",
     "commander": "^11.0.0",
     "fs-extra": "^11.1.1",
-    "handlebars": "^4.7.7"
+    "handlebars": "^4.7.7",
+    "lodash": "^4.17.21"
   },
   "keywords": [
     "token",

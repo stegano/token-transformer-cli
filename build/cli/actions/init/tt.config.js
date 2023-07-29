@@ -7,17 +7,15 @@ const config = {
     /**
      * Output file name
      */
-    name: "design-style",
-
+    // name: "sample",
     /**
      * Output file path
      */
-    dir: "out",
-
+    // dir: "out",
     /**
      * Output file extension
      */
-    // ext?: "scss",
+    // ext: "txt",
   },
 
   /**
@@ -25,15 +23,16 @@ const config = {
    * (=`preset` is a set of configurations that includes pre-processors and post-processors.)
    */
   presets: [
-    "zeplin-scss",
-    // or "zeplin-css",
-    // or "jwt-formatter",
+    // "token-transformer-cli-presets/jwt-viewer",
+    // "token-transformer-cli-presets/zeplin-scss",
+    // "token-transformer-cli-presets/zeplin-css",
+    // "token-transformer-cli-presets/jwt-formatter",
   ],
 
   /**
    * Token file path
    */
-  tokenFile: "./design-token.json",
+  // tokenFile: "./design-token.json",
 
   /**
    * Token string
@@ -60,6 +59,6 @@ const config = {
    * Standard output to console
    * If `outputFile` value is not set, output to `stdout`
    */
-  verbose: false,
+  // verbose: false,
 };
 module.exports = config;

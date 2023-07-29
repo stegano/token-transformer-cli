@@ -5,7 +5,7 @@ export interface Options {
     /**
      * Configuration file
      */
-    config: string;
+    configFile: string;
     /**
      * Output file path
      */

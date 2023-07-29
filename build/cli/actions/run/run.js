@@ -26,44 +26,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runAction = exports.getOutputFileExtensionList = exports.getTemplateFileList = exports.getTemplateList = exports.fetchConfig = exports.fetchConfigPath = exports.importModule = void 0;
-/* eslint-disable global-require */
+exports.action = void 0;
 const node_path_1 = __importDefault(require("node:path"));
-const node_os_1 = __importDefault(require("node:os"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const chalk_1 = __importDefault(require("chalk"));
 const transform_1 = require("../../../transform");
-const cli_interface_1 = require("../../cli.interface");
+const utils_1 = require("../../utils");
 const { error, log } = console;
-/**
- * Import module
- */
-const importModule = async (name) => {
-    return (await Promise.resolve(`${name}`).then(s => __importStar(require(s)))).default;
-};
-exports.importModule = importModule;
-/**
- * Fetch configuration file path
- */
-const fetchConfigPath = async () => {
-    const homeDir = node_os_1.default.homedir();
-    const currDir = process.cwd();
-    if (await fs_extra_1.default.exists(node_path_1.default.resolve(currDir, cli_interface_1.CONFIG_FILE_NAME))) {
-        return currDir;
-    }
-    if (await fs_extra_1.default.exists(node_path_1.default.resolve(homeDir, cli_interface_1.CONFIG_FILE_NAME))) {
-        return homeDir;
-    }
-    return undefined;
-};
-exports.fetchConfigPath = fetchConfigPath;
 /**
  * Fetch configuration
  */
 const fetchConfig = async (options) => {
     let config = {};
-    if (await fs_extra_1.default.exists(options.config)) {
-        config = (await Promise.resolve(`${options.config}`).then(s => __importStar(require(s)))).default;
+    if (await fs_extra_1.default.exists(options.configFile)) {
+        config = (await Promise.resolve(`${options.configFile}`).then(s => __importStar(require(s)))).default;
     }
     /**
      * Output file
@@ -106,7 +82,7 @@ const fetchConfig = async (options) => {
     if (options.preProcessors) {
         config.preProcessors = await Promise.all([...(config.preProcessors || []), ...options.preProcessors].map((module) => {
             if (typeof module === "string") {
-                return (0, exports.importModule)(module);
+                return (0, utils_1.importModule)(module);
             }
             return module;
         }));
@@ -117,7 +93,7 @@ const fetchConfig = async (options) => {
     if (options.postProcessors) {
         config.postProcessors = await Promise.all([...(config.postProcessors || []), ...options.postProcessors].map((module) => {
             if (typeof module === "string") {
-                return (0, exports.importModule)(module);
+                return (0, utils_1.importModule)(module);
             }
             return module;
         }));
@@ -128,7 +104,7 @@ const fetchConfig = async (options) => {
     if (options.presets) {
         config.presets = await Promise.all([...(config.presets || []), ...options.presets].map((module) => {
             if (typeof module === "string") {
-                return (0, exports.importModule)(module);
+                return (0, utils_1.importModule)(module);
             }
             return module;
         }));
@@ -143,7 +119,6 @@ const fetchConfig = async (options) => {
     config.debug = options.debug === true;
     return config;
 };
-exports.fetchConfig = fetchConfig;
 /**
  * Fetch list of template
  */
@@ -159,7 +134,6 @@ const getTemplateList = (config, presets) => {
     });
     return ret;
 };
-exports.getTemplateList = getTemplateList;
 /**
  * Fetch list of template file paths
  */
@@ -175,7 +149,6 @@ const getTemplateFileList = (config, presets) => {
     });
     return ret;
 };
-exports.getTemplateFileList = getTemplateFileList;
 /**
  * Fetch list of file extensions
  */
@@ -191,31 +164,37 @@ const getOutputFileExtensionList = (config, presets) => {
     });
     return ret;
 };
-exports.getOutputFileExtensionList = getOutputFileExtensionList;
 /**
  * Run action
  */
-const runAction = async (inputToken, options) => {
+const action = async (inputToken, options) => {
     try {
-        const configFileDir = await (0, exports.fetchConfigPath)();
-        if (configFileDir) {
-            log(chalk_1.default.green.bold(`[!] Configuration file found at ${node_path_1.default.resolve(configFileDir, cli_interface_1.CONFIG_FILE_NAME)}\n\n`));
+        const configFilePath = (await (0, utils_1.fetchConfigFilePath)(utils_1.CONFIG_JS_FILE_NAME)) ||
+            (await (0, utils_1.fetchConfigFilePath)(utils_1.CONFIG_JSON_FILE_NAME));
+        const configFileDir = configFilePath ? node_path_1.default.dirname(configFilePath) : undefined;
+        if (configFilePath) {
+            log(chalk_1.default.green(`[✓] Configuration file found at \`${configFilePath}\`\n`));
         }
         else {
-            log(chalk_1.default.yellow.bold("[!] Configuration file not found.\n\n"));
+            log(chalk_1.default.yellow("[𝘟] Configuration file not found.\n"));
         }
         const currDir = process.cwd();
-        const config = await (0, exports.fetchConfig)({ ...options, token: inputToken });
+        const config = await fetchConfig({
+            ...options,
+            configFile: configFilePath || "",
+            token: inputToken,
+        });
         const { presets = [], outputFile } = config;
-        const templateList = options.template ? [options.template] : (0, exports.getTemplateList)(config, presets);
+        const templateList = options.template ? [options.template] : getTemplateList(config, presets);
         const templateFileList = options.templateFile
             ? [options.templateFile]
-            : (0, exports.getTemplateFileList)(config, presets);
+            : getTemplateFileList(config, presets);
         /**
-         * Error occurs when multiple templates exist
+         * Error occurs when multiple templates exist.
          */
         if (templateList.length + templateFileList.length > 1) {
-            throw new Error("Multiple templates have been set.");
+            log(chalk_1.default.red("[𝘟] Multiple templates have been set."));
+            return;
         }
         let template = templateList[0];
         if (template === undefined && templateFileList.length > 0) {
@@ -223,13 +202,14 @@ const runAction = async (inputToken, options) => {
         }
         const outputFileExtensionList = options.outputFile
             ? [node_path_1.default.parse(options.outputFile).ext.slice(1)]
-            : (0, exports.getOutputFileExtensionList)(config, presets);
+            : getOutputFileExtensionList(config, presets);
         const outputFileExtension = outputFileExtensionList[0];
         /**
-         * Error occurs when multiple file extensions exist
+         * Error occurs when multiple file extensions exist.
          */
         if (outputFileExtensionList.length > 1) {
-            throw new Error("Multiple file extensions have been set.");
+            log(chalk_1.default.red("[𝘟] Multiple file extensions have been set."));
+            return;
         }
         const token = config.token
             ? config.token
@@ -239,7 +219,8 @@ const runAction = async (inputToken, options) => {
          * Error occurs when no token information exists
          */
         if (token === undefined) {
-            throw new Error("Token information is not provided.");
+            log(chalk_1.default.red("[𝘟] Token information is not provided."));
+            return;
         }
         /**
          * Collect processors present in presets and those in the configuration
@@ -266,11 +247,12 @@ const runAction = async (inputToken, options) => {
         /**
          * Generate result file
          */
-        if (outputFile) {
+        if (outputFile?.dir && outputFile?.name) {
             await fs_extra_1.default.mkdirp(node_path_1.default.resolve(options.outputFile ? currDir : configFileDir || currDir, outputFile.dir));
             const parsedOutputName = node_path_1.default.parse(outputFile.name);
-            const outputFilename = node_path_1.default.basename(parsedOutputName.name) +
-                (outputFileExtension ? `.${outputFileExtension}` : "");
+            const outputFilename = outputFileExtension
+                ? `${node_path_1.default.basename(parsedOutputName.name)}.${outputFileExtension}`
+                : parsedOutputName.name;
             const outputFilePath = node_path_1.default.resolve(outputFile.dir, outputFilename);
             await fs_extra_1.default.writeFile(outputFilePath, transformed, "utf-8");
             log(chalk_1.default.green(`[Success] Created '${outputFilePath}'.`));
@@ -293,5 +275,5 @@ const runAction = async (inputToken, options) => {
         }
     }
 };
-exports.runAction = runAction;
-exports.default = exports.runAction;
+exports.action = action;
+exports.default = exports.action;

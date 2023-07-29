@@ -10,4 +10,8 @@ export interface Options {
      * Configuration file directory
      */
     fileDir: string;
+    /**
+     * Create a dedicated configuration file for the CLI
+     */
+    cli: boolean;
 }

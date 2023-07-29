@@ -1,6 +1,6 @@
-import { Options } from "./init.interface";
+import { Options } from "./show.interface";
 /**
- * Create configuration file
+ * Show action
  */
 export declare const action: (options: Options) => Promise<void>;
 export default action;

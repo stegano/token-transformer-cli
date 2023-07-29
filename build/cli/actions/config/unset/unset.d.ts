@@ -1,6 +1,6 @@
-import { Options } from "./init.interface";
+import { Options } from "./unset.interface";
 /**
- * Create configuration file
+ * Unset action
  */
 export declare const action: (options: Options) => Promise<void>;
 export default action;

@@ -10,11 +10,11 @@ export interface Config {
         /**
          * Output file name
          */
-        name: string;
+        name?: string;
         /**
          * Output file path
          */
-        dir: string;
+        dir?: string;
         /**
          * Output file extension
          */
