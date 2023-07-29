@@ -17,7 +17,7 @@ const config = {
     /**
      * Output file extension
      */
-    // ext?: "scss",
+    // ext: "scss",
   },
 
   /**
