@@ -56,7 +56,7 @@ This configuration sets Token Transformer CLI to run with `jwt-viewer` preset as
   ```
 ## Commands
 
-You can run Token Transformer via `tt` or `tt-cli` command. To see the commands and options, run the following command line.
+You can run Token Transformer CLI via `tt` or `tt-cli` command. To see the commands and options, run the following command line.
 
 ```bash
 tt --help
@@ -67,9 +67,9 @@ tt --help
 
 If you want to use a complex transformation process, it is recommended to configure the configuration file.
 
-#### Create a `token-transformer.config.js` file.
+#### Create a `tt.config.js` or `tt.config.json` file.
 
-Create a default Token Transformer configuration file(`tt.config.js` or `tt.config.json`)
+Create a default Token Transformer CLI configuration file(`tt.config.js` or `tt.config.json`)
 
 Please refer to the [Config](./src/config/config.interface.ts) interface
 
