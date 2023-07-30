@@ -52,7 +52,7 @@ export const action = async (options: Options) => {
   if (config === false) {
     log(
       chalk.yellow(
-        "[!] Configuration file does not exist. Please create the configuration file first using `tt init` command.",
+        "[!] Configuration file does not exist. Please create the configuration file first using `tt init --cli` command.",
       ),
     );
     return;
