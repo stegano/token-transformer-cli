@@ -59,6 +59,7 @@ configProgram
   .description("Show the configuration.")
   .option("-n, --name <name...>", "Display the values for the input option names.", [])
   .option("-l, --line-numbers", "Display with line numbers.", false)
+  .option("-i, --index <number>", "The index of the configuration to be displayed.")
   .option(
     "-c, --config-file <filepath>",
     "Config file path.",
@@ -71,6 +72,7 @@ configProgram
   .description("Set the configuration.")
   .option("-n, --name <name>", "Option name to be set.")
   .option("-v, --value <value...>", "Option value to be set.")
+  .option("-i, --index <number>", "The index of the configuration to be modified.", "0")
   .option(
     "-c, --config-file <filepath>",
     "Config file path.",
@@ -82,6 +84,7 @@ configProgram
   .command("unset")
   .description("Unset the configuration.")
   .option("-n, --name <name>", "Option name to be unset.")
+  .option("-i, --index <number>", "The index of the configuration to be modified.", "0")
   .option(
     "-c, --config-file <filepath>",
     "Config file path.",

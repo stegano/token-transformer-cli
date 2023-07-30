@@ -12,6 +12,8 @@ const { log } = console;
  * Unset action
  */
 export const action = async (options: Options) => {
+  const index = Number(options.index);
+  const configurationIndex = Number.isNaN(index) ? 0 : index;
   const optionName = options.name;
 
   if (optionName === undefined) {
@@ -24,7 +26,7 @@ export const action = async (options: Options) => {
   /**
    * Import configuration json
    */
-  const config: Config | false =
+  const config: Config[] | Config | false =
     (await fs.exists(configFilePath)) && (await importModule(path.resolve(configFilePath)));
 
   if (config === false) {
@@ -36,9 +38,22 @@ export const action = async (options: Options) => {
     return;
   }
 
+  if (
+    Array.isArray(config) &&
+    typeof configurationIndex === "number" &&
+    configurationIndex >= config.length
+  ) {
+    log(
+      chalk.yellow(
+        `[!] Configuration index \`${configurationIndex}\` does not exist. Please check the configuration file.`,
+      ),
+    );
+    return;
+  }
+
   log(chalk.green.bold(`[✓] The configuration file found at \`${configFilePath}\` path.\n`));
 
-  _.set(config, optionName, undefined);
+  _.set(Array.isArray(config) ? config[configurationIndex] : config, optionName, undefined);
 
   fs.writeFile(configFilePath, `${JSON.stringify(config, null, 2)}\n`);
 

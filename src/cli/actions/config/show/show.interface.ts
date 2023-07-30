@@ -14,4 +14,8 @@ export interface Options {
    * Display configuration with line numbers
    */
   lineNumbers: boolean;
+  /**
+   * index
+   */
+  index: string;
 }
