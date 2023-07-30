@@ -14,6 +14,8 @@ const { log } = console;
  * Unset action
  */
 const action = async (options) => {
+    const index = Number(options.index);
+    const configurationIndex = Number.isNaN(index) ? 0 : index;
     const optionName = options.name;
     if (optionName === undefined) {
         log(chalk_1.default.yellow("[𝘟] Please specify the option name to be unset."));
@@ -28,8 +30,14 @@ const action = async (options) => {
         log(chalk_1.default.yellow("[𝘟] Configuration file does not exist. Please create the configuration file first using `tt init --cli` command."));
         return;
     }
+    if (Array.isArray(config) &&
+        typeof configurationIndex === "number" &&
+        configurationIndex >= config.length) {
+        log(chalk_1.default.yellow(`[!] Configuration index \`${configurationIndex}\` does not exist. Please check the configuration file.`));
+        return;
+    }
     log(chalk_1.default.green.bold(`[✓] The configuration file found at \`${configFilePath}\` path.\n`));
-    lodash_1.default.set(config, optionName, undefined);
+    lodash_1.default.set(Array.isArray(config) ? config[configurationIndex] : config, optionName, undefined);
     fs_extra_1.default.writeFile(configFilePath, `${JSON.stringify(config, null, 2)}\n`);
     log(chalk_1.default.green.bold(`[✓] The \`${optionName}\` option has been unset.`));
 };

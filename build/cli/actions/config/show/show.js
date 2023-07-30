@@ -38,6 +38,8 @@ const displayJson = (data, lineNumbers = false) => {
  * Show action
  */
 const action = async (options) => {
+    const index = Number(options.index);
+    const configurationIndex = Number.isNaN(index) ? undefined : index;
     const configFilePath = (await (0, utils_1.fetchConfigFilePath)(utils_1.CONFIG_JSON_FILE_NAME)) || options.configFile;
     /**
      * Import configuration json
@@ -47,13 +49,21 @@ const action = async (options) => {
         log(chalk_1.default.yellow("[!] Configuration file does not exist. Please create the configuration file first using `tt init --cli` command."));
         return;
     }
+    if (Array.isArray(config) &&
+        typeof configurationIndex === "number" &&
+        configurationIndex >= config.length) {
+        log(chalk_1.default.yellow(`[!] Configuration index \`${configurationIndex}\` does not exist. Please check the configuration file.`));
+        return;
+    }
     log(chalk_1.default.green.bold(`[✓] The configuration file found at \`${configFilePath}\` path.\n`));
     /**
      * Display the values for the input option names
      */
     if (options.name.length > 0) {
         options.name.forEach((n) => {
-            const value = lodash_1.default.get(config, n);
+            const value = lodash_1.default.get(Array.isArray(config) && typeof configurationIndex === "number"
+                ? config[configurationIndex]
+                : config, n);
             log(chalk_1.default.bgGreen(`<${n}>\n`));
             switch (typeof value) {
                 case "object": {
@@ -78,7 +88,9 @@ const action = async (options) => {
     /**
      * Display without name option
      */
-    displayJson(config, options.lineNumbers);
+    displayJson(Array.isArray(config) && typeof configurationIndex === "number"
+        ? config[configurationIndex]
+        : config, options.lineNumbers);
 };
 exports.action = action;
 exports.default = exports.action;

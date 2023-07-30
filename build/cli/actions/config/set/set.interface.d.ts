@@ -14,4 +14,8 @@ export interface Options {
      * Configuration file
      */
     configFile: string;
+    /**
+     * index
+     */
+    index: string;
 }

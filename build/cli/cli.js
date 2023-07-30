@@ -39,6 +39,7 @@ configProgram
     .description("Show the configuration.")
     .option("-n, --name <name...>", "Display the values for the input option names.", [])
     .option("-l, --line-numbers", "Display with line numbers.", false)
+    .option("-i, --index <number>", "The index of the configuration to be displayed.")
     .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG || node_path_1.default.resolve(process.cwd(), utils_1.CONFIG_JS_FILE_NAME))
     .action(actions_1.Config.Show.action);
 configProgram
@@ -46,15 +47,17 @@ configProgram
     .description("Set the configuration.")
     .option("-n, --name <name>", "Option name to be set.")
     .option("-v, --value <value...>", "Option value to be set.")
+    .option("-i, --index <number>", "The index of the configuration to be modified.", "0")
     .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG || node_path_1.default.resolve(process.cwd(), utils_1.CONFIG_JS_FILE_NAME))
     .action(actions_1.Config.Set.action);
 configProgram
     .command("unset")
     .description("Unset the configuration.")
     .option("-n, --name <name>", "Option name to be unset.")
+    .option("-i, --index <number>", "The index of the configuration to be modified.", "0")
     .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG || node_path_1.default.resolve(process.cwd(), utils_1.CONFIG_JS_FILE_NAME))
     .action(actions_1.Config.Unset.action);
 exports.program.addCommand(configProgram);
-exports.program.version("1.1.0");
+exports.program.version("1.1.1");
 exports.program.parse(process.argv);
 exports.default = exports.program;
