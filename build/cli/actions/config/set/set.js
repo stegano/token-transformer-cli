@@ -70,7 +70,7 @@ const action = async (options) => {
         log(chalk_1.default.yellow("[𝘟] Configuration file does not exist. Please create the configuration file first using `tt init --cli` command."));
         return;
     }
-    log(chalk_1.default.green.bold(`[✓] Configuration file found at the \`${configFilePath}\` path.\n`));
+    log(chalk_1.default.green.bold(`[✓] The configuration file found at \`${configFilePath}\` path.\n`));
     lodash_1.default.set(config, optionName, supportedMultiOptionValueNameList.includes(optionName)
         ? optionValueList.map(convertType)
         : convertType(optionValueList[0]));

@@ -5,7 +5,7 @@ export interface Options {
     /**
      * Configuration file
      */
-    configFile: string;
+    configFile?: string;
     /**
      * Output file path
      */
@@ -47,4 +47,8 @@ export interface Options {
      * Debug mode
      */
     debug: boolean;
+    /**
+     * Run work in parallel
+     */
+    parallel: boolean;
 }

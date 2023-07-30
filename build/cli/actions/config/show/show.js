@@ -44,10 +44,10 @@ const action = async (options) => {
      */
     const config = (await fs_extra_1.default.exists(configFilePath)) && (await (0, utils_1.importModule)(node_path_1.default.resolve(configFilePath)));
     if (config === false) {
-        log(chalk_1.default.yellow("[!] Configuration file does not exist. Please create the configuration file first using `tt init` command."));
+        log(chalk_1.default.yellow("[!] Configuration file does not exist. Please create the configuration file first using `tt init --cli` command."));
         return;
     }
-    log(chalk_1.default.green.bold(`[✓] Configuration file found at the \`${configFilePath}\` path.\n`));
+    log(chalk_1.default.green.bold(`[✓] The configuration file found at \`${configFilePath}\` path.\n`));
     /**
      * Display the values for the input option names
      */

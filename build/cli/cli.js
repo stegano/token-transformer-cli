@@ -30,7 +30,8 @@ exports.program
     .option("-po, --post-processors <module...>", "Post-processor names.", env.TT_POST_PROCESSORS ? env.TT_POST_PROCESSORS.split(",") : [])
     .option("-p, --presets <module...>", "Preset names.", env.TT_PRESETS ? env.TT_PRESETS.split(",") : [])
     .option("-v, --verbose", "Print to stdout if output file doesn't exist.", env.TT_VERBOSE === "true")
-    .option("--debug", "Print debug information.", env.TT_DEBUG === "true")
+    .option("-d, --debug", "Print debug information.", env.TT_DEBUG === "true")
+    .option("--parallel", "Run work in parallel.", env.TT_PARALLEL === "true")
     .action(actions_1.Run.action);
 const configProgram = new commander_1.Command("config").description("Configuration commands");
 configProgram
@@ -54,6 +55,6 @@ configProgram
     .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG || node_path_1.default.resolve(process.cwd(), utils_1.CONFIG_JS_FILE_NAME))
     .action(actions_1.Config.Unset.action);
 exports.program.addCommand(configProgram);
-exports.program.version("1.0.2");
+exports.program.version("1.1.0");
 exports.program.parse(process.argv);
 exports.default = exports.program;
