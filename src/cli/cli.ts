@@ -48,7 +48,8 @@ program
     "Print to stdout if output file doesn't exist.",
     env.TT_VERBOSE === "true",
   )
-  .option("--debug", "Print debug information.", env.TT_DEBUG === "true")
+  .option("-d, --debug", "Print debug information.", env.TT_DEBUG === "true")
+  .option("--parallel", "Run work in parallel.", env.TT_PARALLEL === "true")
   .action(Run.action);
 
 const configProgram = new Command("config").description("Configuration commands");
