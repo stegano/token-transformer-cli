@@ -5,7 +5,7 @@ export interface Options {
   /**
    * Option name
    */
-  name: string;
+  name?: string;
   /**
    * Option value
    */
@@ -13,7 +13,7 @@ export interface Options {
   /**
    * Configuration file
    */
-  configFile: string;
+  configFile?: string;
   /**
    * index
    */

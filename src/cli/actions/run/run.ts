@@ -5,12 +5,7 @@ import chalk from "chalk";
 import { Options } from "./run.interface";
 import { Config } from "../../../config/config.interface";
 import { PostProcessor, PreProcessor, Preset, transform } from "../../../transform";
-import {
-  CONFIG_JSON_FILE_NAME,
-  CONFIG_JS_FILE_NAME,
-  fetchConfigFilePath,
-  importModule,
-} from "../../utils";
+import { fetchConfigFilePath, importModule } from "../../utils";
 
 const { error, log } = console;
 const currDir = process.cwd();
@@ -21,7 +16,7 @@ const fetchConfigList = async (options: Options): Promise<Config[]> => {
   const configList: Config[] = [];
 
   if (options.configFile && (await fs.exists(options.configFile))) {
-    const config: Config | Config[] = (await import(options.configFile)).default;
+    const config: Config | Config[] = (await import(path.resolve(options.configFile))).default;
     configList.push(...(Array.isArray(config) ? config : [config]));
   }
 
@@ -364,10 +359,27 @@ const performTransformation = async (config: Config, configFileDir?: string) => 
  */
 export const action = async (inputToken: string, options: Options): Promise<void> => {
   try {
-    const configFilePath =
-      (await fetchConfigFilePath(CONFIG_JS_FILE_NAME)) ||
-      (await fetchConfigFilePath(CONFIG_JSON_FILE_NAME)) ||
-      undefined;
+    const configFilePath = options.configFile
+      ? ((await fs.exists(options.configFile)) && options.configFile) || undefined
+      : await fetchConfigFilePath();
+
+    if (options.configFile && configFilePath === undefined) {
+      log(
+        chalk.yellow(
+          `[𝘟] The configuration file does not exist at the \`${options.configFile}\` path.`,
+        ),
+      );
+      return;
+    }
+
+    if (configFilePath === undefined) {
+      log(
+        chalk.yellow(
+          "[𝘟] Configuration file does not exist. Please create the configuration file first using `tt init --cli` command.",
+        ),
+      );
+      return;
+    }
 
     const configFileDir = configFilePath ? path.dirname(configFilePath) : undefined;
 

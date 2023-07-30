@@ -1,13 +1,17 @@
 import path from "node:path";
 import os from "node:os";
 import fs from "fs-extra";
-import { CONFIG_JS_FILE_NAME } from "./utils.interface";
+import { CONFIG_JSON_FILE_NAME, CONFIG_JS_FILE_NAME } from "./utils.interface";
 
 /**
  * Import module
  */
 export const importModule = async (name: string) => {
-  return (await import(name)).default;
+  try {
+    return (await import(name)).default;
+  } catch (e) {
+    throw new Error(`\`${name}\` is not installed. Please install it first.`);
+  }
 };
 
 /**
@@ -30,16 +34,47 @@ export const fetchConfigDirPath = async (
 /**
  * Fetch configuration file path
  */
-export const fetchConfigFilePath = async (
-  filename: string = CONFIG_JS_FILE_NAME,
-): Promise<string | void> => {
+export const fetchConfigFilePath = async (fileName?: string): Promise<string | undefined> => {
   const homeDir = os.homedir();
   const currDir = process.cwd();
-  if (await fs.exists(path.resolve(currDir, filename))) {
-    return path.resolve(currDir, filename);
-  }
-  if (await fs.exists(path.resolve(homeDir, filename))) {
-    return path.resolve(homeDir, filename);
+  if (fileName) {
+    let filePath: string;
+    /**
+     * If the input filename exists in the project directory or the home directory, it returns the path.
+     */
+    filePath = path.resolve(currDir, fileName);
+    if (await fs.exists(filePath)) {
+      return filePath;
+    }
+    filePath = path.resolve(homeDir, fileName);
+    if (await fs.exists(filePath)) {
+      return filePath;
+    }
+  } else {
+    let filePath: string;
+    /**
+     * If the input filename does not exist, it searches for the file in the project directory or the home directory,
+     * first with the .js extension and then with the .json extension. If the file is found, it returns the corresponding path
+     */
+    filePath = path.resolve(currDir, CONFIG_JS_FILE_NAME);
+    if (await fs.exists(filePath)) {
+      return filePath;
+    }
+
+    filePath = path.resolve(currDir, CONFIG_JSON_FILE_NAME);
+    if (await fs.exists(filePath)) {
+      return filePath;
+    }
+
+    filePath = path.resolve(homeDir, CONFIG_JS_FILE_NAME);
+    if (await fs.exists(filePath)) {
+      return filePath;
+    }
+
+    filePath = path.resolve(homeDir, CONFIG_JSON_FILE_NAME);
+    if (await fs.exists(filePath)) {
+      return filePath;
+    }
   }
   return undefined;
 };

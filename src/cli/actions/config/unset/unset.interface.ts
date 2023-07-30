@@ -5,11 +5,11 @@ export interface Options {
   /**
    * Option name
    */
-  name: string;
+  name?: string;
   /**
    * Configuration file
    */
-  configFile: string;
+  configFile?: string;
   /**
    * index
    */

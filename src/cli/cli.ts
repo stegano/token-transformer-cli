@@ -1,8 +1,6 @@
 #!/usr/bin/env node
-import path from "node:path";
 import { Command } from "commander";
 import { Config, Init, Run } from "./actions";
-import { CONFIG_JS_FILE_NAME } from "./utils";
 
 export const program = new Command("tt");
 
@@ -63,7 +61,7 @@ configProgram
   .option(
     "-c, --config-file <filepath>",
     "Config file path.",
-    env.TT_JS_CONFIG || env.TT_JSON_CONFIG || path.resolve(process.cwd(), CONFIG_JS_FILE_NAME),
+    env.TT_JS_CONFIG || env.TT_JSON_CONFIG,
   )
   .action(Config.Show.action);
 
@@ -76,7 +74,7 @@ configProgram
   .option(
     "-c, --config-file <filepath>",
     "Config file path.",
-    env.TT_JS_CONFIG || env.TT_JSON_CONFIG || path.resolve(process.cwd(), CONFIG_JS_FILE_NAME),
+    env.TT_JS_CONFIG || env.TT_JSON_CONFIG,
   )
   .action(Config.Set.action);
 
@@ -88,7 +86,7 @@ configProgram
   .option(
     "-c, --config-file <filepath>",
     "Config file path.",
-    env.TT_JS_CONFIG || env.TT_JSON_CONFIG || path.resolve(process.cwd(), CONFIG_JS_FILE_NAME),
+    env.TT_JS_CONFIG || env.TT_JSON_CONFIG,
   )
   .action(Config.Unset.action);
 

@@ -21,15 +21,20 @@ export const action = async (options: Options) => {
     return;
   }
 
-  const configFilePath = (await fetchConfigFilePath(CONFIG_JSON_FILE_NAME)) || options.configFile;
+  const configFilePath = options.configFile
+    ? ((await fs.exists(options.configFile)) && options.configFile) || undefined
+    : await fetchConfigFilePath(CONFIG_JSON_FILE_NAME);
 
-  /**
-   * Import configuration json
-   */
-  const config: Config[] | Config | false =
-    (await fs.exists(configFilePath)) && (await importModule(path.resolve(configFilePath)));
+  if (options.configFile && configFilePath === undefined) {
+    log(
+      chalk.yellow(
+        `[𝘟] The configuration file does not exist at the \`${options.configFile}\` path.`,
+      ),
+    );
+    return;
+  }
 
-  if (config === false) {
+  if (configFilePath === undefined) {
     log(
       chalk.yellow(
         "[𝘟] Configuration file does not exist. Please create the configuration file first using `tt init --cli` command.",
@@ -37,6 +42,13 @@ export const action = async (options: Options) => {
     );
     return;
   }
+
+  /**
+   * Import configuration json
+   */
+  const config: Config[] | Config = configFilePath
+    ? await importModule(path.resolve(configFilePath))
+    : undefined;
 
   if (
     Array.isArray(config) &&
