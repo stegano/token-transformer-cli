@@ -134,6 +134,21 @@ const fetchConfigList = async (options: Options): Promise<Config[]> => {
     }
 
     /**
+     * Output file
+     */
+    if (options.outputFile) {
+      const { name, dir, ext } = path.parse(options.outputFile);
+      ret = {
+        ...ret,
+        outputFile: {
+          name,
+          dir,
+          ext,
+        },
+      };
+    }
+
+    /**
      * Verbose mode
      */
     ret = {
@@ -206,15 +221,56 @@ const getOutputFileExtensionList = (config: Config, presets: Preset[]): string[]
 };
 
 /**
+ * Display key-value pairs of an object in the console.
+ */
+const displayObjectKv = (config: object, prefix?: string) => {
+  Object.entries(config).forEach(([key, value]) => {
+    switch (typeof value) {
+      case "object": {
+        if (Array.isArray(value)) {
+          value.forEach((item, index) => {
+            if (typeof item === "function") {
+              const k = prefix ? `${prefix}.${key}.[${index}]` : `${key}.[${index}]`;
+              log(chalk.bgBlack.white(`> ${k}: <function>`));
+            } else {
+              displayObjectKv(item, `${key}[${index}]`);
+            }
+          });
+        } else {
+          displayObjectKv(value, `${key}`);
+        }
+        break;
+      }
+      default: {
+        const k = prefix ? `${prefix}.${key}` : `${key}`;
+        log(chalk.bgBlack.white(`> ${k}: "${value}"`));
+        break;
+      }
+    }
+  });
+};
+
+/**
+ * Display the applied configurations in the console.
+ */
+const displayAppliedConfigurations = (config: Config) => {
+  log(chalk.bgBlack.white.bold("[✓] Applied configurations."));
+  displayObjectKv(config);
+  log("");
+};
+
+/**
  * Perform the transformation process with the input options and configurations.
  */
-const performTransformation = async (options: Options, config: Config, configFileDir?: string) => {
+const performTransformation = async (config: Config, configFileDir?: string) => {
   const { presets = [], outputFile } = config;
-  const templateList = options.template ? [options.template] : getTemplateList(config, presets);
+  const templateList = config.template ? [config.template] : getTemplateList(config, presets);
 
-  const templateFileList = options.templateFile
-    ? [options.templateFile]
+  const templateFileList = config.templateFile
+    ? [config.templateFile]
     : getTemplateFileList(config, presets);
+
+  displayAppliedConfigurations(config);
 
   /**
    * Error occurs when multiple templates exist.
@@ -224,14 +280,11 @@ const performTransformation = async (options: Options, config: Config, configFil
     return;
   }
 
-  let template = templateList[0];
+  const template =
+    templateFileList.length > 0 ? await fs.readFile(templateFileList[0], "utf-8") : templateList[0];
 
-  if (template === undefined && templateFileList.length > 0) {
-    template = await fs.readFile(templateFileList[0], "utf-8");
-  }
-
-  const outputFileExtensionList = options.outputFile
-    ? [path.parse(options.outputFile).ext.slice(1)]
+  const outputFileExtensionList = config.outputFile?.ext
+    ? [config.outputFile?.ext]
     : getOutputFileExtensionList(config, presets);
   const outputFileExtension = outputFileExtensionList[0];
 
@@ -247,7 +300,7 @@ const performTransformation = async (options: Options, config: Config, configFil
     ? config.token
     : config.tokenFile &&
       (await fs.readFile(
-        path.resolve(options.tokenFile ? currDir : configFileDir || currDir, config.tokenFile),
+        path.resolve(config.tokenFile ? currDir : configFileDir || currDir, config.tokenFile),
         "utf-8",
       ));
 
@@ -288,7 +341,7 @@ const performTransformation = async (options: Options, config: Config, configFil
    */
   if (outputFile?.dir && outputFile?.name) {
     await fs.mkdirp(
-      path.resolve(options.outputFile ? currDir : configFileDir || currDir, outputFile.dir),
+      path.resolve(config.outputFile ? currDir : configFileDir || currDir, outputFile.dir),
     );
     const parsedOutputName = path.parse(outputFile.name);
     const outputFilename = outputFileExtension
@@ -296,7 +349,7 @@ const performTransformation = async (options: Options, config: Config, configFil
       : parsedOutputName.name;
     const outputFilePath = path.resolve(outputFile.dir, outputFilename);
     await fs.writeFile(outputFilePath, transformed, "utf-8");
-    log(chalk.green(`[Success] Created '${outputFilePath}'.`));
+    log(chalk.green(`[✓] Created '${outputFilePath}'.`));
   } else if (config.verbose === true) {
     if (transformed) {
       process.stdout.write(transformed);
@@ -319,9 +372,9 @@ export const action = async (inputToken: string, options: Options): Promise<void
     const configFileDir = configFilePath ? path.dirname(configFilePath) : undefined;
 
     if (configFilePath) {
-      log(chalk.green(`[✓] Configuration file found at \`${configFilePath}\`\n`));
+      log(chalk.green.bold(`[✓] The configuration file found at \`${configFilePath}\` path.\n`));
     } else {
-      log(chalk.yellow("[𝘟] Configuration file not found.\n"));
+      log(chalk.yellow("[𝘟] Configuration file not found."));
     }
 
     const configList = await fetchConfigList({
@@ -331,12 +384,10 @@ export const action = async (inputToken: string, options: Options): Promise<void
     });
 
     if (options.parallel) {
-      await Promise.all(
-        configList.map((config) => performTransformation(options, config, configFileDir)),
-      );
+      await Promise.all(configList.map((config) => performTransformation(config, configFileDir)));
     } else {
       for (let i = 0; i < configList.length; i += 1) {
-        await performTransformation(options, configList[i], configFileDir);
+        await performTransformation(configList[i], configFileDir);
       }
     }
   } catch (e) {

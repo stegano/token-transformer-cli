@@ -58,7 +58,7 @@ export const action = async (options: Options) => {
     return;
   }
 
-  log(chalk.green.bold(`[✓] Configuration file found at the \`${configFilePath}\` path.\n`));
+  log(chalk.green.bold(`[✓] The configuration file found at \`${configFilePath}\` path.\n`));
 
   /**
    * Display the values for the input option names

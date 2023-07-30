@@ -87,7 +87,7 @@ export const action = async (options: Options) => {
     return;
   }
 
-  log(chalk.green.bold(`[✓] Configuration file found at the \`${configFilePath}\` path.\n`));
+  log(chalk.green.bold(`[✓] The configuration file found at \`${configFilePath}\` path.\n`));
 
   _.set(
     config,
