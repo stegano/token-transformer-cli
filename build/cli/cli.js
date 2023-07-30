@@ -58,6 +58,6 @@ configProgram
     .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG || node_path_1.default.resolve(process.cwd(), utils_1.CONFIG_JS_FILE_NAME))
     .action(actions_1.Config.Unset.action);
 exports.program.addCommand(configProgram);
-exports.program.version("1.1.1");
+exports.program.version("1.1.2");
 exports.program.parse(process.argv);
 exports.default = exports.program;

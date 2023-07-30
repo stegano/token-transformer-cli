@@ -168,8 +168,7 @@ const fetchConfigList = async (options) => {
         };
         return ret;
     });
-    await Promise.all(promiseList);
-    return configList;
+    return Promise.all(promiseList);
 };
 /**
  * Fetch list of template
@@ -225,9 +224,12 @@ const displayObjectKv = (config, prefix) => {
             case "object": {
                 if (Array.isArray(value)) {
                     value.forEach((item, index) => {
+                        const k = prefix ? `${prefix}.${key}.[${index}]` : `${key}.[${index}]`;
                         if (typeof item === "function") {
-                            const k = prefix ? `${prefix}.${key}.[${index}]` : `${key}.[${index}]`;
                             log(chalk_1.default.bgBlack.white(`> ${k}: <function>`));
+                        }
+                        else if (typeof item === "string") {
+                            log(chalk_1.default.bgBlack.white(`> ${k}: "${value}"`));
                         }
                         else {
                             displayObjectKv(item, `${key}[${index}]`);
