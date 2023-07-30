@@ -167,9 +167,7 @@ const fetchConfigList = async (options: Options): Promise<Config[]> => {
     return ret;
   });
 
-  await Promise.all(promiseList);
-
-  return configList;
+  return Promise.all(promiseList);
 };
 
 /**
@@ -229,9 +227,11 @@ const displayObjectKv = (config: object, prefix?: string) => {
       case "object": {
         if (Array.isArray(value)) {
           value.forEach((item, index) => {
+            const k = prefix ? `${prefix}.${key}.[${index}]` : `${key}.[${index}]`;
             if (typeof item === "function") {
-              const k = prefix ? `${prefix}.${key}.[${index}]` : `${key}.[${index}]`;
               log(chalk.bgBlack.white(`> ${k}: <function>`));
+            } else if (typeof item === "string") {
+              log(chalk.bgBlack.white(`> ${k}: "${value}"`));
             } else {
               displayObjectKv(item, `${key}[${index}]`);
             }
