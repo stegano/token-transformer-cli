@@ -20,7 +20,7 @@ git clone https://github.com/stegano/token-transformer-cli.git
 
 ## Quick Starts
 
-Get started quickly with [token-transformer-presets](https://www.npmjs.com/package/token-transformer-cli)
+Get started quickly with [`token-transformer-presets`](https://www.npmjs.com/package/token-transformer-presets)
 
 * **Convert Zeplin design token to a CSS file.**
   ```bash
