@@ -9,7 +9,7 @@ export interface Options {
     /**
      * Configuration file
      */
-    configFile: string;
+    configFile?: string;
     /**
      * Display configuration with line numbers
      */

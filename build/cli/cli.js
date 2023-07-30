@@ -1,14 +1,9 @@
 #!/usr/bin/env node
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.program = void 0;
-const node_path_1 = __importDefault(require("node:path"));
 const commander_1 = require("commander");
 const actions_1 = require("./actions");
-const utils_1 = require("./utils");
 exports.program = new commander_1.Command("tt");
 const { env } = process;
 exports.program
@@ -40,7 +35,7 @@ configProgram
     .option("-n, --name <name...>", "Display the values for the input option names.", [])
     .option("-l, --line-numbers", "Display with line numbers.", false)
     .option("-i, --index <number>", "The index of the configuration to be displayed.")
-    .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG || node_path_1.default.resolve(process.cwd(), utils_1.CONFIG_JS_FILE_NAME))
+    .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG)
     .action(actions_1.Config.Show.action);
 configProgram
     .command("set")
@@ -48,16 +43,16 @@ configProgram
     .option("-n, --name <name>", "Option name to be set.")
     .option("-v, --value <value...>", "Option value to be set.")
     .option("-i, --index <number>", "The index of the configuration to be modified.", "0")
-    .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG || node_path_1.default.resolve(process.cwd(), utils_1.CONFIG_JS_FILE_NAME))
+    .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG)
     .action(actions_1.Config.Set.action);
 configProgram
     .command("unset")
     .description("Unset the configuration.")
     .option("-n, --name <name>", "Option name to be unset.")
     .option("-i, --index <number>", "The index of the configuration to be modified.", "0")
-    .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG || node_path_1.default.resolve(process.cwd(), utils_1.CONFIG_JS_FILE_NAME))
+    .option("-c, --config-file <filepath>", "Config file path.", env.TT_JS_CONFIG || env.TT_JSON_CONFIG)
     .action(actions_1.Config.Unset.action);
 exports.program.addCommand(configProgram);
-exports.program.version("1.1.2");
+exports.program.version("1.1.3");
 exports.program.parse(process.argv);
 exports.default = exports.program;

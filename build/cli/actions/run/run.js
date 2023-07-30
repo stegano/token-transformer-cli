@@ -41,7 +41,7 @@ const currDir = process.cwd();
 const fetchConfigList = async (options) => {
     const configList = [];
     if (options.configFile && (await fs_extra_1.default.exists(options.configFile))) {
-        const config = (await Promise.resolve(`${options.configFile}`).then(s => __importStar(require(s)))).default;
+        const config = (await Promise.resolve(`${node_path_1.default.resolve(options.configFile)}`).then(s => __importStar(require(s)))).default;
         configList.push(...(Array.isArray(config) ? config : [config]));
     }
     const promiseList = configList.map(async (config) => {
@@ -346,9 +346,17 @@ const performTransformation = async (config, configFileDir) => {
  */
 const action = async (inputToken, options) => {
     try {
-        const configFilePath = (await (0, utils_1.fetchConfigFilePath)(utils_1.CONFIG_JS_FILE_NAME)) ||
-            (await (0, utils_1.fetchConfigFilePath)(utils_1.CONFIG_JSON_FILE_NAME)) ||
-            undefined;
+        const configFilePath = options.configFile
+            ? ((await fs_extra_1.default.exists(options.configFile)) && options.configFile) || undefined
+            : await (0, utils_1.fetchConfigFilePath)();
+        if (options.configFile && configFilePath === undefined) {
+            log(chalk_1.default.yellow(`[𝘟] The configuration file does not exist at the \`${options.configFile}\` path.`));
+            return;
+        }
+        if (configFilePath === undefined) {
+            log(chalk_1.default.yellow("[𝘟] Configuration file does not exist. Please create the configuration file first using `tt init --cli` command."));
+            return;
+        }
         const configFileDir = configFilePath ? node_path_1.default.dirname(configFilePath) : undefined;
         if (configFilePath) {
             log(chalk_1.default.green.bold(`[✓] The configuration file found at \`${configFilePath}\` path.\n`));

@@ -35,7 +35,12 @@ const utils_interface_1 = require("./utils.interface");
  * Import module
  */
 const importModule = async (name) => {
-    return (await Promise.resolve(`${name}`).then(s => __importStar(require(s)))).default;
+    try {
+        return (await Promise.resolve(`${name}`).then(s => __importStar(require(s)))).default;
+    }
+    catch (e) {
+        throw new Error(`\`${name}\` is not installed. Please install it first.`);
+    }
 };
 exports.importModule = importModule;
 /**
@@ -56,14 +61,45 @@ exports.fetchConfigDirPath = fetchConfigDirPath;
 /**
  * Fetch configuration file path
  */
-const fetchConfigFilePath = async (filename = utils_interface_1.CONFIG_JS_FILE_NAME) => {
+const fetchConfigFilePath = async (fileName) => {
     const homeDir = node_os_1.default.homedir();
     const currDir = process.cwd();
-    if (await fs_extra_1.default.exists(node_path_1.default.resolve(currDir, filename))) {
-        return node_path_1.default.resolve(currDir, filename);
+    if (fileName) {
+        let filePath;
+        /**
+         * If the input filename exists in the project directory or the home directory, it returns the path.
+         */
+        filePath = node_path_1.default.resolve(currDir, fileName);
+        if (await fs_extra_1.default.exists(filePath)) {
+            return filePath;
+        }
+        filePath = node_path_1.default.resolve(homeDir, fileName);
+        if (await fs_extra_1.default.exists(filePath)) {
+            return filePath;
+        }
     }
-    if (await fs_extra_1.default.exists(node_path_1.default.resolve(homeDir, filename))) {
-        return node_path_1.default.resolve(homeDir, filename);
+    else {
+        let filePath;
+        /**
+         * If the input filename does not exist, it searches for the file in the project directory or the home directory,
+         * first with the .js extension and then with the .json extension. If the file is found, it returns the corresponding path
+         */
+        filePath = node_path_1.default.resolve(currDir, utils_interface_1.CONFIG_JS_FILE_NAME);
+        if (await fs_extra_1.default.exists(filePath)) {
+            return filePath;
+        }
+        filePath = node_path_1.default.resolve(currDir, utils_interface_1.CONFIG_JSON_FILE_NAME);
+        if (await fs_extra_1.default.exists(filePath)) {
+            return filePath;
+        }
+        filePath = node_path_1.default.resolve(homeDir, utils_interface_1.CONFIG_JS_FILE_NAME);
+        if (await fs_extra_1.default.exists(filePath)) {
+            return filePath;
+        }
+        filePath = node_path_1.default.resolve(homeDir, utils_interface_1.CONFIG_JSON_FILE_NAME);
+        if (await fs_extra_1.default.exists(filePath)) {
+            return filePath;
+        }
     }
     return undefined;
 };

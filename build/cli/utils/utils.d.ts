@@ -9,6 +9,6 @@ export declare const fetchConfigDirPath: (filename?: string) => Promise<string |
 /**
  * Fetch configuration file path
  */
-export declare const fetchConfigFilePath: (filename?: string) => Promise<string | void>;
+export declare const fetchConfigFilePath: (fileName?: string) => Promise<string | undefined>;
 declare const _default: {};
 export default _default;
