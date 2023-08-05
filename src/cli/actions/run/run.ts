@@ -166,7 +166,7 @@ const fetchConfigList = async (options: Options): Promise<Config[]> => {
 };
 
 /**
- * Fetch list of template
+ * Get list of template
  */
 const getTemplateList = (config: Config, presets: Preset[]): string[] => {
   const ret: string[] = [];
@@ -182,7 +182,7 @@ const getTemplateList = (config: Config, presets: Preset[]): string[] => {
 };
 
 /**
- * Fetch list of template file paths
+ * Get list of template file paths
  */
 const getTemplateFileList = (config: Config, presets: Preset[]): string[] => {
   const ret: string[] = [];
@@ -198,7 +198,7 @@ const getTemplateFileList = (config: Config, presets: Preset[]): string[] => {
 };
 
 /**
- * Fetch list of file extensions
+ * Get list of file extensions
  */
 const getOutputFileExtensionList = (config: Config, presets: Preset[]): string[] => {
   const ret: string[] = [];
@@ -214,6 +214,52 @@ const getOutputFileExtensionList = (config: Config, presets: Preset[]): string[]
 };
 
 /**
+ * Get list of pre-processor
+ */
+export const getPreProcessorList = (config: Config, presets: Preset[]) => {
+  return [
+    ...presets.reduce<PreProcessor[]>((ret, preset) => {
+      if (preset.preProcessors) {
+        const { processorOptions } = preset;
+        ret.push(
+          ...preset.preProcessors.map<PreProcessor>((processor) => {
+            return Array.isArray(processor)
+              ? [processor[0], { ...processor[1], ...processorOptions }]
+              : [processor, processorOptions];
+          }),
+        );
+      }
+      return ret;
+    }, []),
+    // [!] Processors in the configuration file are added to the end of the list.
+    ...(config.preProcessors || []),
+  ];
+};
+
+/**
+ * Get list of post-processor
+ */
+export const getPostProcessorList = (config: Config, presets: Preset[]) => {
+  return [
+    ...presets.reduce<PostProcessor[]>((ret, preset) => {
+      if (preset.postProcessors) {
+        const { processorOptions } = preset;
+        ret.push(
+          ...preset.postProcessors.map<PostProcessor>((processor) => {
+            return Array.isArray(processor)
+              ? [processor[0], { ...processor[1], ...processorOptions }]
+              : [processor, processorOptions];
+          }),
+        );
+      }
+      return ret;
+    }, []),
+    // [!] Processors in the configuration file are added to the end of the list.
+    ...(config.postProcessors || []),
+  ];
+};
+
+/**
  * Display key-value pairs of an object in the console.
  */
 const displayObjectKv = (config: object, prefix?: string) => {
@@ -222,7 +268,7 @@ const displayObjectKv = (config: object, prefix?: string) => {
       case "object": {
         if (Array.isArray(value)) {
           value.forEach((item, index) => {
-            const k = prefix ? `${prefix}.${key}.[${index}]` : `${key}.[${index}]`;
+            const k = prefix ? `${prefix}.${key}[${index}]` : `${key}[${index}]`;
             if (typeof item === "function") {
               log(chalk.bgBlack.white(`> ${k}: <function>`));
             } else if (typeof item === "string") {
@@ -308,28 +354,14 @@ const performTransformation = async (config: Config, configFileDir?: string) => 
   }
 
   /**
-   * Collect processors present in presets and those in the configuration
-   * [!] Processors present in configuration file are executed after all preset settings
-   */
-  const preProcessors: PreProcessor[] = [
-    ...presets.reduce<PreProcessor[]>((ret, preset) => {
-      ret.push(...(preset.preProcessors || []));
-      return ret;
-    }, []),
-    ...(config.preProcessors || []),
-  ];
-  const postProcessors: PostProcessor[] = [
-    ...presets.reduce<PostProcessor[]>((ret, preset) => {
-      ret.push(...(preset.postProcessors || []));
-      return ret;
-    }, []),
-    ...(config.postProcessors || []),
-  ];
-
-  /**
    * Transformed token information
    */
-  const transformed = await transform(token, template, preProcessors, postProcessors);
+  const transformed = await transform(
+    token,
+    template,
+    getPreProcessorList(config, presets),
+    getPostProcessorList(config, presets),
+  );
 
   /**
    * Generate result file

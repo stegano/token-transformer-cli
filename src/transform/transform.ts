@@ -5,10 +5,12 @@ import { PostProcessor, PreProcessor } from "./transform.interface";
  * Pre-processor executor
  */
 export const preProcess = (tokenData: string, preProcessors: PreProcessor[]): object =>
-  preProcessors.reduce<object>(
-    (data, preProcessor, index) => preProcessor(index === 0 ? tokenData : data),
-    {},
-  );
+  preProcessors.reduce<object>((data, preProcessor, index) => {
+    const evaluatedData = index === 0 ? tokenData : data;
+    return Array.isArray(preProcessor)
+      ? preProcessor[0](evaluatedData, preProcessor[1])
+      : preProcessor(evaluatedData);
+  }, {});
 
 /**
  * Post-processor executor
@@ -17,7 +19,12 @@ export const postProcess = (
   content: string,
   postProcessors: PostProcessor[],
   data: object,
-): string => postProcessors.reduce((str, postProcessor) => postProcessor(str, data), content);
+): string =>
+  postProcessors.reduce((str, postProcessor) => {
+    return Array.isArray(postProcessor)
+      ? postProcessor[0](str, data, postProcessor[1])
+      : postProcessor(str, data);
+  }, content);
 
 /**
  * Default template

@@ -91,7 +91,7 @@ The pre-processor accepts either a token string or an object as an argument and 
 Below is an example of converting the input token to JSON.
 
 ```ts
-const preProcessor = (data: string | object): object => {
+const preProcessor = (data: string | object, options?: Readonly<object>): object => {
   if(typeof data === "string") {
     return JSON.stringify(data);
   }
@@ -109,7 +109,7 @@ The post-processor receives the template string as the first argument and the da
 Below is an example of removing consecutive spaces in a string.
 
 ```ts
-const postProcessor = (template: string, data: Readonly<object>): string => {
+const postProcessor = (content: string, data: Readonly<object>, options?: Readonly<object>): string => {
   return template.replace(/\s{2,}/, " ");
 }
 ```
