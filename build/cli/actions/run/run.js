@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.action = void 0;
+exports.action = exports.getPostProcessorList = exports.getPreProcessorList = void 0;
 /* eslint-disable no-await-in-loop */
 const node_path_1 = __importDefault(require("node:path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
@@ -171,7 +171,7 @@ const fetchConfigList = async (options) => {
     return Promise.all(promiseList);
 };
 /**
- * Fetch list of template
+ * Get list of template
  */
 const getTemplateList = (config, presets) => {
     const ret = [];
@@ -186,7 +186,7 @@ const getTemplateList = (config, presets) => {
     return ret;
 };
 /**
- * Fetch list of template file paths
+ * Get list of template file paths
  */
 const getTemplateFileList = (config, presets) => {
     const ret = [];
@@ -201,7 +201,7 @@ const getTemplateFileList = (config, presets) => {
     return ret;
 };
 /**
- * Fetch list of file extensions
+ * Get list of file extensions
  */
 const getOutputFileExtensionList = (config, presets) => {
     const ret = [];
@@ -216,6 +216,48 @@ const getOutputFileExtensionList = (config, presets) => {
     return ret;
 };
 /**
+ * Get list of pre-processor
+ */
+const getPreProcessorList = (config, presets) => {
+    return [
+        ...presets.reduce((ret, preset) => {
+            if (preset.preProcessors) {
+                const { processorOptions } = preset;
+                ret.push(...preset.preProcessors.map((processor) => {
+                    return Array.isArray(processor)
+                        ? [processor[0], { ...processor[1], ...processorOptions }]
+                        : [processor, processorOptions];
+                }));
+            }
+            return ret;
+        }, []),
+        // [!] Processors in the configuration file are added to the end of the list.
+        ...(config.preProcessors || []),
+    ];
+};
+exports.getPreProcessorList = getPreProcessorList;
+/**
+ * Get list of post-processor
+ */
+const getPostProcessorList = (config, presets) => {
+    return [
+        ...presets.reduce((ret, preset) => {
+            if (preset.postProcessors) {
+                const { processorOptions } = preset;
+                ret.push(...preset.postProcessors.map((processor) => {
+                    return Array.isArray(processor)
+                        ? [processor[0], { ...processor[1], ...processorOptions }]
+                        : [processor, processorOptions];
+                }));
+            }
+            return ret;
+        }, []),
+        // [!] Processors in the configuration file are added to the end of the list.
+        ...(config.postProcessors || []),
+    ];
+};
+exports.getPostProcessorList = getPostProcessorList;
+/**
  * Display key-value pairs of an object in the console.
  */
 const displayObjectKv = (config, prefix) => {
@@ -224,7 +266,7 @@ const displayObjectKv = (config, prefix) => {
             case "object": {
                 if (Array.isArray(value)) {
                     value.forEach((item, index) => {
-                        const k = prefix ? `${prefix}.${key}.[${index}]` : `${key}.[${index}]`;
+                        const k = prefix ? `${prefix}.${key}[${index}]` : `${key}[${index}]`;
                         if (typeof item === "function") {
                             log(chalk_1.default.bgBlack.white(`> ${k}: <function>`));
                         }
@@ -298,27 +340,9 @@ const performTransformation = async (config, configFileDir) => {
         return;
     }
     /**
-     * Collect processors present in presets and those in the configuration
-     * [!] Processors present in configuration file are executed after all preset settings
-     */
-    const preProcessors = [
-        ...presets.reduce((ret, preset) => {
-            ret.push(...(preset.preProcessors || []));
-            return ret;
-        }, []),
-        ...(config.preProcessors || []),
-    ];
-    const postProcessors = [
-        ...presets.reduce((ret, preset) => {
-            ret.push(...(preset.postProcessors || []));
-            return ret;
-        }, []),
-        ...(config.postProcessors || []),
-    ];
-    /**
      * Transformed token information
      */
-    const transformed = await (0, transform_1.transform)(token, template, preProcessors, postProcessors);
+    const transformed = await (0, transform_1.transform)(token, template, (0, exports.getPreProcessorList)(config, presets), (0, exports.getPostProcessorList)(config, presets));
     /**
      * Generate result file
      */

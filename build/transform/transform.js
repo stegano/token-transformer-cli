@@ -8,12 +8,21 @@ const handlebars_1 = __importDefault(require("handlebars"));
 /**
  * Pre-processor executor
  */
-const preProcess = (tokenData, preProcessors) => preProcessors.reduce((data, preProcessor, index) => preProcessor(index === 0 ? tokenData : data), {});
+const preProcess = (tokenData, preProcessors) => preProcessors.reduce((data, preProcessor, index) => {
+    const evaluatedData = index === 0 ? tokenData : data;
+    return Array.isArray(preProcessor)
+        ? preProcessor[0](evaluatedData, preProcessor[1])
+        : preProcessor(evaluatedData);
+}, {});
 exports.preProcess = preProcess;
 /**
  * Post-processor executor
  */
-const postProcess = (content, postProcessors, data) => postProcessors.reduce((str, postProcessor) => postProcessor(str, data), content);
+const postProcess = (content, postProcessors, data) => postProcessors.reduce((str, postProcessor) => {
+    return Array.isArray(postProcessor)
+        ? postProcessor[0](str, data, postProcessor[1])
+        : postProcessor(str, data);
+}, content);
 exports.postProcess = postProcess;
 /**
  * Default template

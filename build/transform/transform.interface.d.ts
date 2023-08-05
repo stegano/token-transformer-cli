@@ -1,23 +1,31 @@
 /**
+ * Processor options
+ */
+type ProcessorOptions = Record<string, any>;
+/**
  * Pre-processor
  */
-export type PreProcessor = (data: string | object) => object;
+export type PreProcessor<R extends object = any, O extends ProcessorOptions = any> = ((data: string | R, options?: Readonly<O>) => R) | [processor: (data: string | R, options?: Readonly<O>) => R, options?: O];
 /**
  * Post-processor
  */
-export type PostProcessor = (content: string, data: Readonly<object>) => string;
+export type PostProcessor<D extends object = any, O extends ProcessorOptions = any> = ((content: string, data: Readonly<D>, options?: Readonly<O>) => string) | [processor: (content: string, data: Readonly<D>, options?: Readonly<O>) => string, options?: O];
 /**
  * Preset
  */
-export interface Preset {
+export interface Preset<P extends ProcessorOptions = any> {
     /**
      * Pre-processors
      */
-    preProcessors?: PreProcessor[];
+    preProcessors?: PreProcessor<any, P>[];
     /**
      * Post-processors
      */
-    postProcessors?: PostProcessor[];
+    postProcessors?: PostProcessor<any, P>[];
+    /**
+     * Processor options
+     */
+    processorOptions?: P;
     /**
      * Template file path
      * [!] If `template` is set, this setting is ignored
@@ -37,3 +45,4 @@ export interface Preset {
         ext: string;
     };
 }
+export {};
